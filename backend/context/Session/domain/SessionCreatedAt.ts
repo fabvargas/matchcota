@@ -12,8 +12,8 @@ export class SessionCreatedAt {
         SessionCreatedAt.validate(value);
     }
 
-    static async validate(value: Date): Promise<void> {
-         await parseSchema(SessionCreatedAtSchema, value);
+    static validate(value: Date): void {
+          parseSchema(SessionCreatedAtSchema, value);
     }
 
     static create(): SessionCreatedAt {

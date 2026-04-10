@@ -1,34 +1,28 @@
 
 import { generateUUID } from "@/backend/utils/generateUUID";
 import { parseSchema } from "@/backend/utils/parseSchema";
-import z from "zod";
-
-const AuthIdSchema = z.object({
-    id: z.uuid()
-});
-
-export type AuthIdType = z.infer<typeof AuthIdSchema>;
+import { UUIDType, UUIDSchema } from "../../Shared/UUIDType";
 
 export class AuthId {
  
     constructor(
-        private readonly value:AuthIdType
+        private readonly value:UUIDType,
     ){
        AuthId.validate(value);
     }
 
-    static async validate(value: unknown): Promise<void> {
-        await parseSchema(AuthIdSchema, value);
+    static  validate(value: unknown): void {
+         parseSchema(UUIDSchema, value);
         
     }
 
     static create(): AuthId {
         const id = generateUUID();
-        return new AuthId({ id });
+        return new AuthId(id);
     }
 
     getValue(): string {
-        return this.value.id;
+        return this.value;
     }
 
     

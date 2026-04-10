@@ -1,40 +1,30 @@
-import z from "zod";
 
-export const UserProfileComunaSchema = z.enum([
-    "Santiago",
-    "Valparaíso",
-    "Concepción",
-    "La Serena",
-    "Antofagasta",
-    "Temuco",
-    "Rancagua",
-    "Iquique",
-    "Talca",
-    "Puerto Montt"
-    ]);
+import { parseSchema } from "@/backend/utils/parseSchema";
+import { ComunaSchema } from "@/backend/context/Shared/ComunaType";
+import { z } from "zod";
 
+const UserProfileComunaSchema = ComunaSchema;
 export type UserProfileComunaType = z.infer<typeof UserProfileComunaSchema>;
 
 export class UserProfileComuna {
 
-    private constructor(private readonly value: string) {
-        UserProfileComunaSchema.parse(value);
+    public constructor(private readonly value: UserProfileComunaType) {
+        UserProfileComuna.validate(value);
     }
 
-    static async validate(comuna: string): Promise<UserProfileComuna> {
-        const parsed = await UserProfileComunaSchema.parseAsync(comuna);
-        return new UserProfileComuna(parsed);
+    static validate(comuna: UserProfileComunaType): void {
+        parseSchema(UserProfileComunaSchema, comuna);
     }
 
     getComunas(): string[] {
-        return UserProfileComunaSchema.options;
+        return ComunaSchema.options;
     }
 
     isComuna(value: string): boolean {
-        return UserProfileComunaSchema.options.includes(value as any);
+        return ComunaSchema.options.includes(value as any);
     }
 
-    getValue(): string {
+    getValue(): UserProfileComunaType {
         return this.value;
     }
 }

@@ -1,9 +1,9 @@
 import { parseSchema } from "@/backend/utils/parseSchema";
 import z from "zod";
 
-const AuthRoleSchema = z.object({
-    role: z.enum(["adoptante", "refugio"])
-});
+const AuthRoleSchema = z.enum(["adoptante", "refugio"], { message: "Role must be either 'adoptante' or 'refugio'" });
+
+
 
 export type AuthRoleType = z.infer<typeof AuthRoleSchema>;
 
@@ -15,30 +15,30 @@ export class AuthRole {
        AuthRole.validate(value);
     }
 
-    static async validate(data: unknown): Promise<void> {
-        await parseSchema(AuthRoleSchema, data);
+    static  validate(data: unknown): void   {
+         parseSchema(AuthRoleSchema, data);
         
     }
 
     static createAdoptante(): AuthRole {
-        return new AuthRole({ role: "adoptante" });
+        return new AuthRole("adoptante" );
     }
 
     static createRefugio(): AuthRole {
-        return new AuthRole({ role: "refugio" });
+        return new AuthRole("refugio" );
     }
 
 
     getValue(): string {
-        return this.value.role;
+        return this.value;
     }
 
     isAdoptante(): boolean {
-        return this.value.role === "adoptante";
+        return this.value === "adoptante";
     }
 
     isRefugio(): boolean {
-        return this.value.role === "refugio";
+        return this.value === "refugio";
     }
 
     

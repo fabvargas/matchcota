@@ -1,31 +1,26 @@
 import { parseSchema } from "@/backend/utils/parseSchema";
-import z from "zod";
+import { DateType,DateSchema } from "../../Shared/DateType";
 
-const AuthDateCreatedSchema = z.object({
-    date_created: z.date()
-});
-
-export type AuthDateCreatedType = z.infer<typeof AuthDateCreatedSchema>;
 
 export class AuthDateCreated {
 
     constructor(
-        private readonly value:AuthDateCreatedType
+        private readonly value:DateType
     ){
        AuthDateCreated.validate(value);
     }
 
-    static async validate(data: unknown): Promise<void> {
-        await parseSchema(AuthDateCreatedSchema, data);
+    static  validate(data: unknown): void {
+        parseSchema(DateSchema, data);
         
     }
 
     static create(): AuthDateCreated {
-        return new AuthDateCreated({ date_created: new Date() });
+        return new AuthDateCreated(new Date());
     }
 
     getValue(): Date  {
-        return this.value.date_created;
+        return this.value;
     }
 
     

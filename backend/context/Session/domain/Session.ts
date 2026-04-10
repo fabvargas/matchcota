@@ -7,7 +7,7 @@ import { SessionUserId } from "./SessionUserId";
 
 export class Session{
 
-    constructor(
+    private constructor(
         private readonly id:SessionId,
         private readonly userId:SessionUserId,
         private readonly createdAt:SessionCreatedAt,

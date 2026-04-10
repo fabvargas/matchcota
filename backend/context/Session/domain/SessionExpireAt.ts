@@ -12,8 +12,8 @@ export class SessionExpireAt {
          SessionExpireAt.validate(value);
     }
 
-    static async validate(value: Date): Promise<void> {
-         await parseSchema(SessionExpireAtSchema, value);
+    static validate(value: Date): void {
+          parseSchema(SessionExpireAtSchema, value);
     }
 
     getValue(): Date {

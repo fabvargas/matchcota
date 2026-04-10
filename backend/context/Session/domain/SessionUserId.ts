@@ -14,8 +14,8 @@ export class SessionUserId {
         SessionUserId.validate(value);
     }
 
-    static async validate(value: string): Promise<void> {
-         await parseSchema(SessionUserIdSchema, value);
+    static validate(value: string): void {
+          parseSchema(SessionUserIdSchema, value);
          
     }
 

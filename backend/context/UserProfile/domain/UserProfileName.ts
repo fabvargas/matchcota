@@ -1,20 +1,21 @@
 
-import z from "zod";
+import { parseSchema } from "@/backend/utils/parseSchema";
+import {z} from "zod";
 
-export const UserProfileNameSchema = z.string().min(1).max(100);
+export const UserProfileNameSchema = z.string({message: "Invalid name"}).trim().min(1, "Name must be at least 1 character long").max(100, "Name must be at most 100 characters long");
 
 export type UserProfileNameType = z.infer<typeof UserProfileNameSchema>;
 
 export class UserProfileName {
 
-    private constructor(private readonly value: string) {
-        UserProfileNameSchema.parse(value);
+    public constructor(private readonly value: string) {
+        UserProfileName.validate(value);
     }
 
-    static async validate(name: string): Promise<UserProfileName> {
-        const parsed = await UserProfileNameSchema.parseAsync(name);
-        return new UserProfileName(parsed);
+    static validate(name: string): void {
+        parseSchema(UserProfileNameSchema, name);
     }
+
 
     getValue(): string {
         return this.value;

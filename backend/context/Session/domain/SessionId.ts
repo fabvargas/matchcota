@@ -10,10 +10,12 @@ export class SessionId {
 
     constructor(
         private readonly value: string
-    ){}
+    ){
+        SessionId.validate(value);
+    }
 
-    static async validate(value: string): Promise<void> {
-         await parseSchema(AuthIdSchema, value);
+    static validate(value: string): void {
+          parseSchema(AuthIdSchema, value);
 
     }
 

@@ -1,7 +1,7 @@
 import z from "zod";
 import { parseSchema } from "@/backend/utils/parseSchema";
 
-const SessionTokenSchema = z.string().min(1);
+const SessionTokenSchema = z.string().trim().min(1).max(255);
 export type SessionTokenType = z.infer<typeof SessionTokenSchema>;
 
 
@@ -14,8 +14,8 @@ export class SessionToken {
         SessionToken.validate(value);
     }
 
-    static async validate(value: string): Promise<void> {
-         await parseSchema(SessionTokenSchema, value);
+    static validate(value: string): void {
+         parseSchema(SessionTokenSchema, value);
 
     }
 
