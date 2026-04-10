@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Navbar } from "@/frontend/components/navbar";
+import { Footer } from "@/frontend/components/footer";
 
 const inter = Inter({
   weight: ["100", "300", "400", "800", "900"],
@@ -24,7 +26,11 @@ export default function RootLayout({
       lang="en"
       className={`${inter.className}  h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-[#FFF6F0]">
+        <Navbar />
+        <main className="flex-1">{children}</main>
+        <Footer />
+      </body>
     </html>
   );
 }
