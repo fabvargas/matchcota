@@ -1,9 +1,11 @@
+"use server";
+
 import { z } from "zod";
 import { parseSchema } from "../Shared/parseSchema";
 import { ValidateError } from "../Shared/ValidateError";
 import { ResponseType } from "../Shared/type";
-import { VerifyCredentialUseCase } from "@/backend/context/Auth/app/VerifyCredentialUseCase";
 import { ValidateDomainError } from "@/backend/error/ValidateDomainError";
+import { signIn } from "@/auth";
 
 
 
@@ -22,11 +24,11 @@ export default async function LogIn(email:string, password:string): Promise<Resp
     try {
         const parsedData = await parseSchema(LoginResponseSchema, { email, password });
 
-        const useCase = new VerifyCredentialUseCase();
-
-       const auth =  await useCase.execute(parsedData.email, parsedData.password);
-
-       console.log(auth)
+        await signIn("credentials", {
+            username: parsedData.email,
+            password: parsedData.password,
+            redirect: false,
+        })
 
         return {
             error: false,

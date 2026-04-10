@@ -1,3 +1,4 @@
+"use server";
 import{ResponseType } from "@/app/controller/Shared/type";
 import {z} from "zod";
 import { parseSchema } from "../Shared/parseSchema";

@@ -31,7 +31,7 @@ export class VerifyCredentialUseCase {
         throw new ValidateDomainError("Credenciales inválidas");
     }
 
-    if("gfdgfdg" !== emailObj.getValue()){
+    if(auth.getEmail().getValue() !== emailObj.getValue()){
         throw new ValidateDomainError("Credenciales inválidas");
     }
 

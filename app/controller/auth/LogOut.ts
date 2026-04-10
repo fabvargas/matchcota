@@ -1,3 +1,5 @@
+"use server";
+
 import { ResponseType } from "@/app/controller/Shared/type";
 
 export default async function LogOut(): Promise<ResponseType<void>> {

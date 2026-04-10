@@ -1,3 +1,4 @@
+"use server";
 import {z} from "zod";
 import { parseSchema } from "../Shared/parseSchema";
 import { ValidateError } from "../Shared/ValidateError";
