@@ -1,3 +1,5 @@
+
+"use client";
 import { Button } from "@/frontend/components/ui/button";
 import {
   Card,
@@ -9,9 +11,12 @@ import {
   CardContent
 } from "@/frontend/components/ui/card";
 
-import { Dog, Heart } from "lucide-react";
+import { Dog, Heart, Link, LogIn } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <section className="max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-10 items-center">
       
@@ -25,9 +30,15 @@ export default function Home() {
           de compatibilidad para promover adopciones responsables y duraderas.
         </p>
 
-        <Button className="mr-4" variant="customorange" size="lg"> <Heart className="w-4 h-4" />
+        <Button
+          variant="customorange"
+          size="lg"
+          onClick={() => router.push("/mascota")}
+        >
+          <Heart className="w-4 h-4" />
           Adoptar mascotas
         </Button>
+
 
         <Button variant="customgreen" size="lg"> <Dog className="w-4 h-4" />
           Publicar mascotas
