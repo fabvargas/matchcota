@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { LayoutWrapper } from "@/frontend/components/layout-wrapper";
 
 const inter = Inter({
   weight: ["100", "300", "400", "800", "900"],
   subsets: ["latin"],
 });
-
-
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,15 +15,21 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html
       lang="en"
-      className={`${inter.className}  h-full antialiased`}
+      className={`${inter.className} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-screen flex flex-col bg-[#FFF6F0]">
+
+        <LayoutWrapper>
+          {children}
+        </LayoutWrapper>
+
+      </body>
     </html>
   );
 }
