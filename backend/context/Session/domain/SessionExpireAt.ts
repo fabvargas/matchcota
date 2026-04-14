@@ -16,6 +16,12 @@ export class SessionExpireAt {
           parseSchema(SessionExpireAtSchema, value);
     }
 
+    static createExpireAtOneDay(): SessionExpireAt {
+        const now = new Date();
+        const expireAt = new Date(now.getTime() + 24 * 60 * 60 * 1000); 
+        return new SessionExpireAt(expireAt);
+    }
+
     getValue(): Date {
         return this.value;
     }
