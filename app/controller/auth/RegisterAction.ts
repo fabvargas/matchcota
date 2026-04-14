@@ -5,8 +5,10 @@ import { parseSchema } from "../Shared/parseSchema";
 import { ValidateError } from "../Shared/ValidateError";
 import { RegisterAdoptanteUseCase } from "@/backend/context/Auth/app/RegisterAdoptanteUseCase";
 import { ValidateDomainError } from "@/backend/error/ValidateDomainError";
+import { RegisterRefugioUseCase } from "@/backend/context/Auth/app/RegisterRefugioUseCase";
 
-const RegisterAdoptanteSchema = z.object({
+
+const RegisterSchema = z.object({
   email: 
   z.email({message: "Email inválido"})
   .trim()
@@ -25,7 +27,9 @@ const RegisterAdoptanteSchema = z.object({
   z.string()
   .trim()
   .min(1, "El nombre es obligatorio")
-  .max(255, "El nombre debe tener máximo 255 caracteres")
+  .max(255, "El nombre debe tener máximo 255 caracteres"),
+  rol:
+  z.enum(["Adoptante", "Fundacion"], {message: "Rol inválido"})
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Las contraseñas no coinciden",
   path: ["confirmPassword"],
@@ -33,20 +37,48 @@ const RegisterAdoptanteSchema = z.object({
 
 
 
-export default async function RegisterAdoptante(email:string,password:string,confirmPassword:string,name:string): Promise<ResponseType<void>>{
+export async function RegisterAction(
+    prevState: ResponseType<void>,
+  formData: FormData
+): Promise<ResponseType<void>>{
+
+    const data = {
+    email: formData.get("email") as string,
+    password: formData.get("password") as string,
+    confirmPassword: formData.get("confirmPassword") as string,
+    name: formData.get("name") as string,
+    rol: formData.get("rol") as string,
+  };
 
     try{
-        const parsedData = await parseSchema(RegisterAdoptanteSchema, {email,password,confirmPassword,name});
+        const parsedData = await parseSchema(RegisterSchema, data);
 
-        const useCase = new RegisterAdoptanteUseCase();
-        
-        const auth = await useCase.execute(parsedData.email, parsedData.password, parsedData.confirmPassword, parsedData.name);
+        const useCases = {
+         Adoptante: new RegisterAdoptanteUseCase(),
+        Fundacion: new RegisterRefugioUseCase(),
+        } as const;
+
+        const useCase = useCases[parsedData.rol];
+
+        if (!useCase) {
+           return {
+                error: true,
+                message: "Rol inválido"
+            };
+        }
+
+        const auth = await useCase.execute(
+        parsedData.email,
+        parsedData.password,
+        parsedData.confirmPassword,
+        parsedData.name
+        );
 
         console.log(auth)
 
         return {
             error: false,
-            message: "Adoptante registrado exitosamente"
+            message: `${parsedData.rol} registrado exitosamente`
         }
 
     }catch(error){
@@ -64,7 +96,7 @@ export default async function RegisterAdoptante(email:string,password:string,con
                 }
         return {
             error: true,
-            message: "Error inesperado, intente nuevamente"
+            message: "Error inesperado intente nuevamente"
         }
     }
 
