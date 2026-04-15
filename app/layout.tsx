@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { LayoutWrapper } from "@/frontend/components/layout-wrapper";
+import { Toaster } from "@/frontend/components/ui/sonner"
 
 const inter = Inter({
   weight: ["100", "300", "400", "800", "900"],
@@ -24,11 +25,10 @@ export default function RootLayout({
       className={`${inter.className} h-full antialiased`}
     >
       <body className="min-h-screen flex flex-col bg-[#FFF6F0]">
-
+        <Toaster position="top-center" richColors />
         <LayoutWrapper>
           {children}
         </LayoutWrapper>
-
       </body>
     </html>
   );
