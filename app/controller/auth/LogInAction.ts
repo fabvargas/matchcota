@@ -20,9 +20,18 @@ const LoginResponseSchema = z.object({
     .regex(/[@$!%*?&]/, "La contraseña debe contener al menos un carácter especial (@$!%*?&)")
 });
 
-export default async function LogIn(email:string, password:string): Promise<ResponseType<void>> {
+export default async function LogInAction(
+    prevState: ResponseType<void>,
+    formData: FormData
+): Promise<ResponseType<void>> {
+
+    const data = {
+        email: formData.get("email") as string,
+        password: formData.get("password") as string,
+    }
+    
     try {
-        const parsedData = await parseSchema(LoginResponseSchema, { email, password });
+        const parsedData = await parseSchema(LoginResponseSchema, data);
 
         await signIn("credentials", {
             username: parsedData.email,
@@ -49,7 +58,7 @@ export default async function LogIn(email:string, password:string): Promise<Resp
                 }
         return {
             error: true,
-            message: "Error inesperado, intente nuevamente" + error
+            message: "Error inesperado intente nuevamente" + error
         };
     }
 }

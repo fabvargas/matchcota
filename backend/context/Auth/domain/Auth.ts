@@ -103,4 +103,8 @@ export class Auth{
     getEmail(): AuthEmail {
         return this.email;
     }
+
+    getRole(): AuthRole {
+        return this.role;
+    }
 }

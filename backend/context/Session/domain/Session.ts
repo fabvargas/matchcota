@@ -9,7 +9,7 @@ export class Session{
 
     private constructor(
         private readonly id:SessionId,
-        private readonly userId:SessionUserId,
+        private readonly authId:SessionUserId,
         private readonly createdAt:SessionCreatedAt,
         private readonly expireAt:SessionExpireAt,
         private readonly token:SessionToken
@@ -18,9 +18,9 @@ export class Session{
     static create(
         userId:SessionUserId,
         expireAt:SessionExpireAt,
-        token:SessionToken
     ): Session {
         const id = SessionId.create();
+        const token = SessionToken.create();
         const createdAt = SessionCreatedAt.create();
         return new Session(id, userId, createdAt, expireAt, token);
     }
@@ -28,7 +28,7 @@ export class Session{
     toPrimitives() {
         return {
             id: this.id.getValue(),
-            userId: this.userId.getValue(),
+            authId: this.authId.getValue(),
             createdAt: this.createdAt.getValue(),
             expireAt: this.expireAt.getValue(),
             token: this.token.getValue()
@@ -37,18 +37,24 @@ export class Session{
 
     static fromPrimitives(primitives: {
         id: string,
-        userId: string,
+        authId: string,
         createdAt: Date,
         expireAt: Date,
         token: string
     }): Session {
         return new Session(
             new SessionId(primitives.id),
-            new SessionUserId(primitives.userId),
+            new SessionUserId(primitives.authId),
             new SessionCreatedAt(primitives.createdAt),
             new SessionExpireAt(primitives.expireAt),
             new SessionToken(primitives.token)
         )
     }
+
+    getToken(): SessionToken {
+        return this.token;
+    }
+
+   
 
 }
