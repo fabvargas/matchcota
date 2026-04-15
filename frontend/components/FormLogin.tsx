@@ -3,12 +3,24 @@
 import LogInAction from "@/app/controller/auth/LogInAction";
 import Image from "next/image";
 import Link from "next/link";  
-import FormMessages from "./FormMessages";
 import { useSubmitForm } from "../hooks/useSubmitForm";
-
+import { Button } from "./ui/button";
+import { toast } from "sonner";
+import { useEffect } from "react";
 
 export default function FormLogin() {
     const { state, isPending, handleSubmit } = useSubmitForm(LogInAction, { error: false, message: "" });
+
+useEffect(() => {
+  if (state?.error) {
+    toast.error(state.message || "Credenciales incorrectas");
+    return;
+  }
+
+  if (state?.message) {
+    toast.success(state.message || "Inicio de sesión exitoso");
+  }
+}, [state]);
     
   return (
   <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md"> 
@@ -30,21 +42,16 @@ export default function FormLogin() {
                     </label>
                 </div>
                 <div>
-                    <button type="submit" className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <Button type="submit" variant="customlogin" size="lg">
                         {isPending ? "Iniciando..." : "Iniciar Sesión"}
-                    </button>
-                    <FormMessages message={state.message} error={state.error} />
+                    </Button>
+                    
                 </div>
                 <div>
-                    <button
+                    <Button
                     disabled={isPending}
-                    type="button"
-                    className="w-full flex items-center justify-center gap-3 
-                                bg-white text-gray-700 font-medium 
-                                py-3 px-4 rounded-lg 
-                                border border-gray-300 shadow-sm
-                                hover:shadow-md hover:bg-gray-50 
-                                transition-all"
+                    variant="customgoogle"
+                    size="lg"
                     >
                     <Image
                         src="/images/google.png"
@@ -52,8 +59,9 @@ export default function FormLogin() {
                         width={18}
                         height={18}
                      />
-                    <span>Usar con Google</span>
-                    </button>
+                    <span>Iniciar con Google</span>
+                    </Button>
+
                 </div>
                 <div>
                     <p className="text-center text-sm text-gray-600">¿No tienes una cuenta? <Link href="/registro" className="text-blue-600 hover:underline">Regístrate</Link></p>

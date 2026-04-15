@@ -1,4 +1,5 @@
 import FormChangePassword from "@/frontend/components/FormChangePassword"
+import AlertDialogBasic from "@/frontend/components/AlertDialog"
 
 
 export default function Seguridad() {
@@ -15,9 +16,7 @@ export default function Seguridad() {
             <p className="text-sm text-gray-500 mb-4">
                 Al eliminar tu cuenta, todos tus datos serán borrados permanentemente.
             </p>
-            <button className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">
-                Eliminar cuenta
-            </button>
+            <AlertDialogBasic />
         </div>
 
         </div>

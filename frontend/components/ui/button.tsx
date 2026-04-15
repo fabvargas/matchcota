@@ -1,6 +1,7 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Slot } from "radix-ui"
+import Image from "next/image";
 
 import { cn } from "@/frontend/lib/utils"
 
@@ -21,6 +22,12 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         customgreen: "bg-[#4CAF7A] text-white hover:bg-[#4CAF7A]/80",
         customorange: "bg-[#FF7A59] text-white hover:bg-[#FF7A59]/80",
+        customlogin: "w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+        customgoogle:"w-full flex items-center justify-center gap-3 bg-white text-gray-700 font-medium py-3 px-4 rounded-lg border border-gray-300 shadow-sm hover:shadow-md hover:bg-gray-50 transition-all",
+                    
+                                
+                               
+                                
       },
       size: {
         default:

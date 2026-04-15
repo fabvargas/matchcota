@@ -4,18 +4,25 @@ import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import EditProfile from "./editprofile";
 import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+
 
 export default function Profile() {
   const [editMode, setEditMode] = useState(false);
+  const [avatar, setAvatar] = useState("/images/avatars/avatar1.png");
+  
+  
   return (
     <div className="space-y-6">
 
       {/* HEADER */}
       <div className="rounded-xl shadow p-6 flex flex-col md:flex-row items-center gap-6 bg-white">
         {/* Avatar */}
-        <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold">
-          SG
-        </div>
+        <Avatar className="w-24 h-24">
+          <AvatarImage src={avatar} />
+          <AvatarFallback>SG</AvatarFallback>
+        </Avatar>
+        
 
         {/* Info */}
         <div className="flex-1 text-center md:text-left">
@@ -25,9 +32,6 @@ export default function Profile() {
           <div className="flex gap-2 justify-center md:justify-start mt-2">
             <span className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full">
               Adoptante
-            </span>
-            <span className="px-3 py-1 text-sm bg-gray-100 text-gray-600 rounded-full">
-              Activo
             </span>
           </div>
         </div>
@@ -56,15 +60,23 @@ export default function Profile() {
           <div className="relative bg-white rounded-xl shadow-lg p-6 w-full max-w-lg z-10 animate-in fade-in zoom-in-95">
 
             {/* Botón cerrar */}
-            <button
+            <Button
               onClick={() => setEditMode(false)}
-              className="absolute top-3 right-3 text-gray-500 hover:text-black"
+              variant="ghost"
+              className="absolute top-4 right-4 rounded-full p-2 bg-red-500 text-white hover:bg-red-600"
             >
               ✕
-            </button>
+            </Button>
 
             {/* Formulario */}
-            <EditProfile onCancel={() => setEditMode(false)} />
+            <EditProfile
+              currentAvatar={avatar}
+              onSave={(newAvatar) => {
+                setAvatar(newAvatar);
+                setEditMode(false);
+              }}
+              onCancel={() => setEditMode(false)}
+            />
           </div>
         </div>
       )}
@@ -94,11 +106,6 @@ export default function Profile() {
 
       </div>
 
-      <div>        
-        {editMode && (
-        <EditProfile onCancel={() => setEditMode(false)} />
-        )}
-      </div>
 
       {/* INFORMACIÓN PERSONAL */}
       <div className="bg-white rounded-xl shadow p-6">
@@ -110,18 +117,11 @@ export default function Profile() {
         <div className="grid md:grid-cols-2 gap-4">
 
           <div>
-            <label className="text-sm text-gray-500">Nombre</label>
+            <label className="text-sm text-gray-500">Telefóno</label>
             <input
               className="w-full mt-1 p-2 border rounded-lg"
-              defaultValue="Santiago"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm text-gray-500">Correo</label>
-            <input
-              className="w-full mt-1 p-2 border rounded-lg"
-              defaultValue="santiago@email.com"
+              defaultValue="+56 9 1234 5678"
+              readOnly
             />
           </div>
 
@@ -130,6 +130,7 @@ export default function Profile() {
             <input
               className="w-full mt-1 p-2 border rounded-lg"
               defaultValue="Los Lagos"
+              readOnly
             />
           </div>
 
@@ -138,6 +139,7 @@ export default function Profile() {
             <input
               className="w-full mt-1 p-2 border rounded-lg"
               defaultValue="Puerto Montt"
+              readOnly
             />
           </div>
 
@@ -146,25 +148,20 @@ export default function Profile() {
             <input
               className="w-full mt-1 p-2 border rounded-lg"
               defaultValue="Las lomas 1234"
+              readOnly
             />
           </div>
-
-          
-        <div className="mb-4">
-            <label className="text-sm text-gray-500">Código postal</label>
-            <input
-              className="w-full mt-1 p-2 border rounded-lg"
-              defaultValue="5980000"
-            />
-          </div>
-
 
         </div>
 
-        <div>
+        <div className="mt-6">
         <Field>
-          <FieldLabel className="text-sm text-gray-500" htmlFor="textarea-message">Descripción</FieldLabel>
-          <Textarea className="w-full mt-1 p-2 border rounded-lg" id="textarea-message" placeholder="Ingrese una breve descripción" />
+          <FieldLabel className="text-sm text-gray-500" 
+          htmlFor="descripcion">Descripción</FieldLabel>
+          <Textarea className="w-full mt-1 p-2 border rounded-lg" 
+            id="descripcion" 
+            defaultValue="Amante de los animales, con experiencia en cuidado de perros y gatos. Siempre dispuesto a brindar un hogar amoroso a las mascotas que lo necesiten."
+            readOnly />
         </Field>
         </div>
 
