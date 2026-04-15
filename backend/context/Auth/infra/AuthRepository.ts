@@ -4,15 +4,12 @@ import { Auth } from "../domain/Auth";
 import { AuthEmail } from "../domain/AuthEmail";
 import { AuthId } from "../domain/AuthId";
 
-
-//solo "adoptante" y "refugio" para respetar Auth.ts actual
- 
+// Solo "adoptante" y "refugio" para respetar Auth.ts actual
 type AuthRole = "adoptante" | "refugio";
 
- //Representaciion de una fila de la tabla auth en la base de datos
- 
+// Representación de una fila de la tabla public.auth
 type AuthRow = {
-  id_usuario: string;
+  id_auth: string;
   email: string;
   password_hash: string;
   role: AuthRole;
@@ -21,9 +18,10 @@ type AuthRow = {
 };
 
 export class AuthRepository {
+  private static readonly TABLE_NAME = "auth";
 
   private static readonly SELECT_FIELDS = `
-    id_usuario,
+    id_auth,
     email,
     password_hash,
     role,
@@ -31,21 +29,15 @@ export class AuthRepository {
     fecha_creacion
   `;
 
-  
-//El repositorio recibe el cliente de Supabase mediante inyección
-//de dependencias
-
   constructor(private readonly supabase: SupabaseClient) {}
 
-  
-//Guarda una nueva cuenta de autenticacion
-   
+  // Guarda una nueva cuenta de autenticación
   async save(auth: Auth): Promise<void> {
     try {
       const primitives = auth.toPrimitives();
 
       const row = {
-        id_usuario: primitives.id,
+        id_auth: primitives.id,
         email: primitives.email,
         password_hash: primitives.password,
         role: primitives.role,
@@ -53,20 +45,28 @@ export class AuthRepository {
         fecha_creacion: primitives.date_created,
       };
 
-      const { error } = await this.supabase.from("auth").insert(row);
+      const { error } = await this.supabase
+        .from(AuthRepository.TABLE_NAME)
+        .insert(row);
 
-      // Manejo específico para emails duplicados con codigo 23505 que se usa para
-      // evitar duplicados
       if (error) {
+        console.error("SUPABASE INSERT ERROR [auth.save]:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+          row,
+        });
+
         if (error.code === "23505") {
           throw new ServerError("El email ya está registrado.");
         }
 
-        throw new ServerError(
-          "No pudimos crear la cuenta en este momento. Intenta de nuevo más tarde."
-        );
+        throw error;
       }
     } catch (error) {
+      console.error("AUTH REPOSITORY SAVE CATCH:", error);
+
       if (error instanceof ServerError) throw error;
 
       throw new ServerError(
@@ -75,12 +75,11 @@ export class AuthRepository {
     }
   }
 
-  
-//Busca una cuenta por su correo electrónico retornando null si no exite
+  // Busca una cuenta por email
   async findByEmail(email: AuthEmail): Promise<Auth | null> {
     try {
       const { data, error } = await this.supabase
-        .from("auth")
+        .from(AuthRepository.TABLE_NAME)
         .select(AuthRepository.SELECT_FIELDS)
         .eq("email", email.getValue())
         .maybeSingle<AuthRow>();
@@ -103,15 +102,13 @@ export class AuthRepository {
     }
   }
 
-  /**
-   * Busca una cuenta por su identificador unico
-   */
+  // Busca una cuenta por su identificador único
   async findById(id: AuthId): Promise<Auth | null> {
     try {
       const { data, error } = await this.supabase
-        .from("auth")
+        .from(AuthRepository.TABLE_NAME)
         .select(AuthRepository.SELECT_FIELDS)
-        .eq("id_usuario", id.getValue())
+        .eq("id_auth", id.getValue())
         .maybeSingle<AuthRow>();
 
       if (error) {
@@ -132,14 +129,12 @@ export class AuthRepository {
     }
   }
 
-  /**
-   * Verifica si ya existe una cuenta con el email indicado.
-  **/
+  // Verifica si ya existe una cuenta con ese email
   async existsByEmail(email: AuthEmail): Promise<boolean> {
     try {
       const { count, error } = await this.supabase
-        .from("auth")
-        .select("id_usuario", { count: "exact", head: true })
+        .from(AuthRepository.TABLE_NAME)
+        .select("id_auth", { count: "exact", head: true })
         .eq("email", email.getValue());
 
       if (error) {
@@ -158,16 +153,14 @@ export class AuthRepository {
     }
   }
 
-  /**
-   * Actualiza el rol del usuario limitado a los roles definidos en el dominio actual
-   */
+  // Actualiza el rol
   async updateRole(id: AuthId, role: AuthRole): Promise<void> {
     try {
       const { data, error } = await this.supabase
-        .from("auth")
+        .from(AuthRepository.TABLE_NAME)
         .update({ role })
-        .eq("id_usuario", id.getValue())
-        .select("id_usuario");
+        .eq("id_auth", id.getValue())
+        .select("id_auth");
 
       if (error) {
         throw new ServerError(
@@ -175,7 +168,6 @@ export class AuthRepository {
         );
       }
 
-      // Validación para asegurar que el registro existe
       if (!data || data.length === 0) {
         throw new ServerError(
           "No encontramos la cuenta que intentas actualizar."
@@ -190,20 +182,17 @@ export class AuthRepository {
     }
   }
 
-  /**
-   * Actualiza el estado de verificación del usuario.
-   * Se utiliza, por ejemplo, después de confirmar el email.
-   */
+  // Actualiza el estado de verificación
   async updateVerificationStatus(
     id: AuthId,
     verified: boolean
   ): Promise<void> {
     try {
       const { data, error } = await this.supabase
-        .from("auth")
+        .from(AuthRepository.TABLE_NAME)
         .update({ verified })
-        .eq("id_usuario", id.getValue())
-        .select("id_usuario");
+        .eq("id_auth", id.getValue())
+        .select("id_auth");
 
       if (error) {
         throw new ServerError(
@@ -225,20 +214,17 @@ export class AuthRepository {
     }
   }
 
-  /**
-   * Permite actualizar el hash de la contraseña
-   * util para cambiar o recuperar password
-   */
+  // Actualiza el hash de contraseña
   async updatePasswordHash(
     id: AuthId,
     passwordHash: string
   ): Promise<void> {
     try {
       const { data, error } = await this.supabase
-        .from("auth")
+        .from(AuthRepository.TABLE_NAME)
         .update({ password_hash: passwordHash })
-        .eq("id_usuario", id.getValue())
-        .select("id_usuario");
+        .eq("id_auth", id.getValue())
+        .select("id_auth");
 
       if (error) {
         throw new ServerError(
@@ -260,23 +246,21 @@ export class AuthRepository {
     }
   }
 
-  /**
-   * Método generico de actualización del agregado completo.
-   */
+  // Actualización completa del agregado
   async update(auth: Auth): Promise<void> {
     try {
       const primitives = auth.toPrimitives();
 
       const { data, error } = await this.supabase
-        .from("auth")
+        .from(AuthRepository.TABLE_NAME)
         .update({
           email: primitives.email,
           password_hash: primitives.password,
           role: primitives.role,
           verified: primitives.verified,
         })
-        .eq("id_usuario", primitives.id)
-        .select("id_usuario");
+        .eq("id_auth", primitives.id)
+        .select("id_auth");
 
       if (error) {
         throw new ServerError(
@@ -298,9 +282,7 @@ export class AuthRepository {
     }
   }
 
-  /**
-   * Convierte una fila de la base de datos en el agregado de dominio Auth
-   */
+  // Convierte una fila de BD en el agregado Auth
   private static rowToAuth(row: AuthRow): Auth {
     const dateCreated =
       row.fecha_creacion instanceof Date
@@ -308,13 +290,13 @@ export class AuthRepository {
         : new Date(row.fecha_creacion);
 
     return Auth.fromPrimitives({
-      id: row.id_usuario,
+      id: row.id_auth,
       email: row.email,
       password: row.password_hash,
       role: row.role,
       verified: row.verified,
       date_created: dateCreated,
-      date_banned: null, 
+      date_banned: null,
     });
   }
 }
