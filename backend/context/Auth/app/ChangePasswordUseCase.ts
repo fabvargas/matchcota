@@ -1,6 +1,6 @@
 import { ValidateDomainError } from "@/backend/error/ValidateDomainError";
 import { AuthPassword } from "../domain/AuthPassword";
-import { AuthPasswordHashed } from "../domain/AuthPasswordHashed";
+import { Auth } from "../domain/Auth";
 
 export class ChangePasswordUseCase {
 
@@ -27,7 +27,7 @@ export class ChangePasswordUseCase {
             throw new ValidateDomainError("La nueva contraseña no puede ser igual a la contraseña actual");
         }
 
-        const hashedNewPassword = AuthPasswordHashed.create(newPasswordObj.getValue());
+        const hashedNewPassword = await Auth.hashPassword(newPasswordObj);
         
         // await this.authRepository.updatePassword(hashedNewPassword);
 

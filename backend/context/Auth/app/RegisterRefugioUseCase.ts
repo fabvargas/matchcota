@@ -1,7 +1,7 @@
 import { Auth } from "../domain/Auth";
 import { AuthPassword } from "../domain/AuthPassword";
 import { AuthEmail } from "../domain/AuthEmail";
-import hashPassword from "../infra/utils/hashPassword";
+import hashPassword from "../domain/utils/hashPassword";
 import { AuthPasswordHashed } from "../domain/AuthPasswordHashed";
 import { ValidateDomainError } from "@/backend/error/ValidateDomainError";
 import { Refugio } from "../../Refugio/domain/Refugio";
@@ -24,12 +24,12 @@ export class RegisterRefugioUseCase {
         throw new ValidateDomainError("Las contraseñas no coinciden");
     }
 
-    const passwordPlain = new AuthPassword(password);
-    const passwordHashed = await hashPassword(passwordPlain.getValue());
 
-    const auth = Auth.createRefugio(
+
+    const auth = await Auth.createRefugio(
         new AuthEmail(email),
-        AuthPasswordHashed.create(passwordHashed),);
+        new AuthPassword(password)
+    );
     
     const refugio =Refugio.create(
         auth.getId(),

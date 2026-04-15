@@ -4,7 +4,7 @@ import { AuthPassword } from "../domain/AuthPassword";
 import { AuthEmail } from "../domain/AuthEmail";
 import { UserProfile } from "../../UserProfile/domain/UserProfile";
 import { UserProfileName } from "../../UserProfile/domain/UserProfileName";
-import hashPassword from "../infra/utils/hashPassword";
+import hashPassword from "../domain/utils/hashPassword";
 import { AuthPasswordHashed } from "../domain/AuthPasswordHashed";
 
 
@@ -28,12 +28,11 @@ export class RegisterAdoptanteUseCase {
         throw new ValidateDomainError("Las contraseñas no coinciden");
     }
 
-    const passwordPlain = new AuthPassword(password);
-    const passwordHashed = await hashPassword(passwordPlain.getValue());
 
-    const auth = Auth.createAdoptante(
+    const auth = await Auth.createAdoptante(
         new AuthEmail(email),
-        AuthPasswordHashed.create(passwordHashed),);
+       new AuthPassword(password),
+    );
     
     const profile =  UserProfile.create(
         auth.getId(),

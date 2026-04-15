@@ -30,8 +30,8 @@ export function AppSidebar() {
       icon: User,
     },
     {
-      name: "Mascotas",
-      href: "/mascotas",
+      name: "Mascota",
+      href: "mascota",
       icon: PawPrint,
     },
     {

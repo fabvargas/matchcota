@@ -20,25 +20,27 @@ export class Auth{
       
     }
 
-    static  createAdoptante(
+    static  async createAdoptante(
         email:AuthEmail,
-        passwordHashed:AuthPasswordHashed,
-    ): Auth {
+        plainPassword:AuthPassword,
+    ): Promise<Auth> {
         const id = AuthId.create();
         const verified = AuthVerified.create();
         const date_created = AuthDateCreated.create();
         const role = AuthRole.createAdoptante();
+        const passwordHashed = await AuthPasswordHashed.create(plainPassword);
         return new Auth(id, email, passwordHashed, role, verified, date_created);    
     }
 
-    static  createRefugio(
+    static  async createRefugio(
         email:AuthEmail,
-        passwordHashed:AuthPasswordHashed,
-    ): Auth {
+        plainPassword:AuthPassword,
+    ): Promise<Auth> {
         const id = AuthId.create();
         const verified = AuthVerified.create();
         const date_created = AuthDateCreated.create();
         const role = AuthRole.createRefugio();
+        const passwordHashed = await AuthPasswordHashed.create(plainPassword);
         return new Auth(id, email, passwordHashed, role, verified, date_created);    
     }
 
@@ -66,7 +68,7 @@ export class Auth{
         return new Auth(
             new AuthId(primitives.id),
             new AuthEmail(primitives.email),
-            AuthPasswordHashed.create(primitives.password),
+            new AuthPasswordHashed(primitives.password),
             new AuthRole(primitives.role),
             new AuthVerified(primitives.verified),
             new AuthDateCreated(primitives.date_created)
@@ -106,5 +108,13 @@ export class Auth{
 
     getRole(): AuthRole {
         return this.role;
+    }
+
+    comparePassword(plainPassword: AuthPassword): Promise<boolean> {
+        return AuthPasswordHashed.compare(plainPassword, this.passwordHashed);
+    }
+
+    static async hashPassword(plainPassword: AuthPassword ): Promise<AuthPasswordHashed> {
+        return await AuthPasswordHashed.create(plainPassword);
     }
 }

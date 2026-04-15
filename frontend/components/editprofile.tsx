@@ -8,7 +8,7 @@ export default function EditProfile({
   onCancel: () => void;
 }) {
   return (
-    <div className="rounded-xl border border-gray-100 shadow p-6">
+    <form className="rounded-xl border border-gray-100 shadow p-6">
 
       <h2 className="text-lg font-semibold mb-4">
         Editar información
@@ -78,7 +78,7 @@ export default function EditProfile({
       </div>
       
 
-    </div>
+    </form>
 
     
   );
