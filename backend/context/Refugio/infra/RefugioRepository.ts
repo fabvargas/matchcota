@@ -3,63 +3,65 @@ import { ServerError } from "@/backend/error/ServerError";
 import { Refugio } from "../domain/Refugio";
 import { RefugioId } from "../domain/RefugioId";
 import { AuthId } from "../../Auth/domain/AuthId";
-import { ComunaType } from "../../Shared/ComunaType";
+import { ComunaSchema, ComunaType } from "../../Shared/ComunaType";
 
-
+/** Fila de public.refugio_profile con comuna anidada (FK id_comuna → comuna) */
 type RefugioRow = {
-  id: string;
-  id_usuario: string;
+  id_refugio: string;
+  auth_user_id: string;
   nombre: string;
   direccion: string | null;
-  telefono: string | null;
+  telefono: string;
   descripcion: string | null;
-  comuna: ComunaType | null;
   codigo_postal: string | null;
+  verificada: boolean;
+  id_comuna: number | null;
+  comuna: { nombre: string } | null;
 };
 
 export class RefugioRepository {
+  private static readonly TABLE_NAME = "refugio_profile";
+
   /**
-   * Campos que seleccionados desde la tabla refugio en la base de datos
+   * Columnas de refugio_profile + nombre de comuna vía relación PostgREST
    */
   private static readonly SELECT_FIELDS = `
-    id,
-    id_usuario,
+    id_refugio,
+    auth_user_id,
     nombre,
     direccion,
     telefono,
     descripcion,
-    comuna,
-    codigo_postal
+    codigo_postal,
+    verificada,
+    id_comuna,
+    comuna ( nombre )
   `;
 
-  /**
-   * El repositorio recibe el cliente de Supabase por inyección de dependencias
-   */
   constructor(private readonly supabase: SupabaseClient) {}
 
-  /**
-   * Guarda un nuevo refugio en la base de datos.
-   * Se usa normalmente cuando una cuenta autenticada crea su perfil institucional
-   */
   async save(refugio: Refugio): Promise<void> {
     try {
       const primitives = refugio.toPrimitives();
+      const idComuna = await this.comunaTypeToId(primitives.comuna);
 
       const row = {
-        id: primitives.id,
-        id_usuario: primitives.authId,
+        id_refugio: primitives.id,
+        auth_user_id: primitives.authId,
         nombre: primitives.name,
         direccion: primitives.address,
-        telefono: primitives.telephone,
+        telefono: primitives.telephone ?? "Por definir",
         descripcion: primitives.description,
-        comuna: primitives.comuna,
         codigo_postal: primitives.codigoPostal,
+        verificada: false,
+        id_comuna: idComuna,
       };
 
-      const { error } = await this.supabase.from("refugio").insert(row);
+      const { error } = await this.supabase
+        .from(RefugioRepository.TABLE_NAME)
+        .insert(row);
 
       if (error) {
-        // 23505 indica violación de restricción unica
         if (error.code === "23505") {
           throw new ServerError("Ya existe un refugio asociado a este usuario.");
         }
@@ -77,15 +79,12 @@ export class RefugioRepository {
     }
   }
 
-  /**
-   * Busca un refugio por su identificador unico retornando null si no existe
-   */
   async findById(id: RefugioId): Promise<Refugio | null> {
     try {
       const { data, error } = await this.supabase
-        .from("refugio")
+        .from(RefugioRepository.TABLE_NAME)
         .select(RefugioRepository.SELECT_FIELDS)
-        .eq("id", id.getValue())
+        .eq("id_refugio", id.getValue())
         .maybeSingle<RefugioRow>();
 
       if (error) {
@@ -106,16 +105,12 @@ export class RefugioRepository {
     }
   }
 
-  /**
-   * Busca un refugio a partir del id del usuario autenticado
-   * para saber si una cuenta ya tiene un perfil de refugio creado
-   */
   async findByAuthId(authId: AuthId): Promise<Refugio | null> {
     try {
       const { data, error } = await this.supabase
-        .from("refugio")
+        .from(RefugioRepository.TABLE_NAME)
         .select(RefugioRepository.SELECT_FIELDS)
-        .eq("id_usuario", authId.getValue())
+        .eq("auth_user_id", authId.getValue())
         .maybeSingle<RefugioRow>();
 
       if (error) {
@@ -136,16 +131,12 @@ export class RefugioRepository {
     }
   }
 
-  /**
-   * Verifica si ya existe un refugio asociado a un usuario
-   * Esto es útil antes de crear un nuevo perfil de refugio
-   */
   async existsByAuthId(authId: AuthId): Promise<boolean> {
     try {
       const { count, error } = await this.supabase
-        .from("refugio")
-        .select("id", { count: "exact", head: true })
-        .eq("id_usuario", authId.getValue());
+        .from(RefugioRepository.TABLE_NAME)
+        .select("id_refugio", { count: "exact", head: true })
+        .eq("auth_user_id", authId.getValue());
 
       if (error) {
         throw new ServerError(
@@ -163,25 +154,23 @@ export class RefugioRepository {
     }
   }
 
-  /**
-   * Actualiza el perfil completo del refugio
-   */
   async update(refugio: Refugio): Promise<void> {
     try {
       const primitives = refugio.toPrimitives();
+      const idComuna = await this.comunaTypeToId(primitives.comuna);
 
       const { data, error } = await this.supabase
-        .from("refugio")
+        .from(RefugioRepository.TABLE_NAME)
         .update({
           nombre: primitives.name,
           direccion: primitives.address,
-          telefono: primitives.telephone,
+          telefono: primitives.telephone ?? "Por definir",
           descripcion: primitives.description,
-          comuna: primitives.comuna,
           codigo_postal: primitives.codigoPostal,
+          id_comuna: idComuna,
         })
-        .eq("id", primitives.id)
-        .select("id");
+        .eq("id_refugio", primitives.id)
+        .select("id_refugio");
 
       if (error) {
         throw new ServerError(
@@ -189,7 +178,6 @@ export class RefugioRepository {
         );
       }
 
-      // Validamos que si exista el registro que intentamos actualizar
       if (!data || data.length === 0) {
         throw new ServerError(
           "No encontramos el refugio que intentas actualizar."
@@ -205,17 +193,50 @@ export class RefugioRepository {
   }
 
   /**
-   * Convierte una fila de la base de datos en el agregado de dominio Refugio
+   * Resuelve ComunaType (dominio) → id_comuna según catálogo public.comuna.nombre
    */
+  private async comunaTypeToId(
+    comuna: ComunaType | null
+  ): Promise<number | null> {
+    if (comuna === null) return null;
+
+    const { data, error } = await this.supabase
+      .from("comuna")
+      .select("id_comuna")
+      .eq("nombre", comuna)
+      .maybeSingle<{ id_comuna: number }>();
+
+    if (error) {
+      throw new ServerError(
+        "No pudimos resolver la comuna en este momento. Intenta de nuevo más tarde."
+      );
+    }
+
+    if (!data) {
+      throw new ServerError(
+        "La comuna indicada no existe en el catálogo. Verifica el nombre respecto a la tabla comuna."
+      );
+    }
+
+    return data.id_comuna;
+  }
+
   private static rowToRefugio(row: RefugioRow): Refugio {
+    const nombreComuna = row.comuna?.nombre ?? null;
+    let comuna: ComunaType | null = null;
+    if (nombreComuna !== null) {
+      const parsed = ComunaSchema.safeParse(nombreComuna);
+      comuna = parsed.success ? parsed.data : null;
+    }
+
     return Refugio.fromPrimitives({
-      id: row.id,
-      authId: row.id_usuario,
+      id: row.id_refugio,
+      authId: row.auth_user_id,
       name: row.nombre,
       address: row.direccion,
       telephone: row.telefono,
       description: row.descripcion,
-      comuna: row.comuna,
+      comuna,
       codigoPostal: row.codigo_postal,
     });
   }
