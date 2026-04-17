@@ -7,6 +7,7 @@ import { RefugioComuna } from "./RefugioComuna";
 import { RefugioTelephone } from "./RefugioTelephone";
 import { ComunaType } from "../../Shared/ComunaType";
 import { AuthId } from "../../Auth/domain/AuthId";
+import { RefugioImgUrl } from "./RefugioImgUrl";
 
 export class Refugio{
 
@@ -14,6 +15,7 @@ export class Refugio{
         private readonly id:RefugioId,
         private readonly authId: AuthId,
         private readonly name:RefugioName,
+        private readonly img_url?: RefugioImgUrl,
         private readonly address?:RefugioAddress,
         private readonly telephone?:RefugioTelephone,
         private readonly description?:RefugioDescription ,
@@ -26,6 +28,7 @@ export class Refugio{
     static create(
         authId: AuthId,
         name:RefugioName,
+        img_url?: RefugioImgUrl,
         address?:RefugioAddress,
         telephone?:RefugioTelephone,
         description?:RefugioDescription,
@@ -33,7 +36,7 @@ export class Refugio{
         codigoPostal?:RefugioCodigoPostal,
     ): Refugio {
         const id =  RefugioId.create();
-        return new Refugio( id, authId, name, address, telephone, description, comuna, codigoPostal);
+        return new Refugio( id, authId, name, img_url, address, telephone, description, comuna, codigoPostal);
     }
 
 
@@ -55,7 +58,8 @@ export class Refugio{
             telephone: this.telephone?.getValue() || null,
             description: this.description?.getValue() || null,
             comuna: this.comuna?.getValue() || null,
-            codigoPostal: this.codigoPostal?.getValue() || null
+            codigoPostal: this.codigoPostal?.getValue() || null,
+            img_url: this.img_url?.getValue() || null
         }
     }
 
@@ -67,12 +71,14 @@ export class Refugio{
         telephone: string | null,
         description: string | null  ,
         comuna: ComunaType | null,
-        codigoPostal: string | null
+        codigoPostal: string | null,
+        img_url: string | null
     }): Refugio {
         return new Refugio(
             new RefugioId(primitives.id),
             new AuthId(primitives.authId),
             new RefugioName(primitives.name),
+            primitives.img_url == null ? undefined : new RefugioImgUrl(primitives.img_url),
             primitives.address == null ? undefined : new RefugioAddress(primitives.address),
             primitives.telephone == null ? undefined : new RefugioTelephone(primitives.telephone),
             primitives.description == null ? undefined : new RefugioDescription(primitives.description),
