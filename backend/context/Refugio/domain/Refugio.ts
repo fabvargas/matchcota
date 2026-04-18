@@ -3,10 +3,11 @@ import { RefugioDescription } from "./RefugioDescription";
 import { RefugioName } from "./RefugioName";
 import { RefugioAddress } from "./RefugioAddress";
 import { RefugioCodigoPostal } from "./RefugioCodigoPostal";
+import { RefugioComuna } from "./RefugioComuna";
 import { RefugioTelephone } from "./RefugioTelephone";
+import { ComunaType } from "../../Shared/ComunaType";
 import { AuthId } from "../../Auth/domain/AuthId";
 import { RefugioImgUrl } from "./RefugioImgUrl";
-import { ComunaId } from "../../Comuna/ComunaId";
 
 export class Refugio{
 
@@ -18,9 +19,8 @@ export class Refugio{
         private readonly address?:RefugioAddress,
         private readonly telephone?:RefugioTelephone,
         private readonly description?:RefugioDescription ,
-        private readonly comuna?:ComunaId,
+        private readonly comuna?:RefugioComuna,
         private readonly codigoPostal?:RefugioCodigoPostal,
-        private readonly updated_at?: Date,
     ){
         
     }
@@ -32,13 +32,22 @@ export class Refugio{
         address?:RefugioAddress,
         telephone?:RefugioTelephone,
         description?:RefugioDescription,
-        comuna?:ComunaId,
+        comuna?:RefugioComuna,
         codigoPostal?:RefugioCodigoPostal,
-        updated_at?: Date
     ): Refugio {
         const id =  RefugioId.create();
-        return new Refugio( id, authId, name, img_url, address, telephone, description, comuna, codigoPostal, updated_at);
+        return new Refugio( id, authId, name, img_url, address, telephone, description, comuna, codigoPostal);
     }
+
+
+    getComunas(): string[] {
+        return this.comuna?.getComunas() || [];
+    }
+
+    isComuna(value: string): boolean {
+        return this.comuna?.isComuna(value) || false;
+    }
+
 
     toPrimitives() {
         return {
@@ -48,11 +57,9 @@ export class Refugio{
             address: this.address?.getValue() || null,
             telephone: this.telephone?.getValue() || null,
             description: this.description?.getValue() || null,
-            comunaId: this.comuna?.getValue() || null,
+            comuna: this.comuna?.getValue() || null,
             codigoPostal: this.codigoPostal?.getValue() || null,
-            img_url: this.img_url?.getValue() || null,
-            updatedAt: this.updated_at || null
-
+            img_url: this.img_url?.getValue() || null
         }
     }
 
@@ -63,11 +70,9 @@ export class Refugio{
         address: string | null,
         telephone: string | null,
         description: string | null  ,
-        comunaId: number | null,
+        comuna: ComunaType | null,
         codigoPostal: string | null,
-        img_url: string | null,
-        updatedAt: Date | null
-
+        img_url: string | null
     }): Refugio {
         return new Refugio(
             new RefugioId(primitives.id),
@@ -77,10 +82,8 @@ export class Refugio{
             primitives.address == null ? undefined : new RefugioAddress(primitives.address),
             primitives.telephone == null ? undefined : new RefugioTelephone(primitives.telephone),
             primitives.description == null ? undefined : new RefugioDescription(primitives.description),
-            primitives.comunaId == null ? undefined : new ComunaId(primitives.comunaId),
-            primitives.codigoPostal == null ? undefined : new RefugioCodigoPostal(primitives.codigoPostal),
-            primitives.updatedAt == null ? undefined : new Date(primitives.updatedAt)
-
+            primitives.comuna == null ? undefined : new RefugioComuna(primitives.comuna),
+            primitives.codigoPostal == null ? undefined : new RefugioCodigoPostal(primitives.codigoPostal)
         )
     }
 }

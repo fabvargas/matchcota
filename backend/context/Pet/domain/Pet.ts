@@ -1,5 +1,6 @@
 import { PetAge } from "./PetAge";
 import { PetBreed } from "./PetBreed";
+import { PetComuna } from "./PetComuna";
 import { PetDescription } from "./PetDescription";
 import { PetEnergyLevel } from "./PetEnergyLevel";
 import { PetGenre } from "./PetGenre";
@@ -13,7 +14,6 @@ import { PetHealthDescription } from "./PetHealthDescription";
 import { PetSize } from "./PetSize";
 import { PetUpdatedAt } from "./PetUpdatedAt";
 import { PetImages } from "./PetImages";
-import { ComunaId } from "../../Comuna/ComunaId";
 
 
 export class Pet {
@@ -21,9 +21,10 @@ export class Pet {
     constructor(
         private readonly id: PetId,
         private readonly id_refugio: PetIdRefugio,
+        private readonly tipo: PetType,
         private readonly raza: PetBreed,
         private readonly estado: PetState,
-        private readonly comuna : ComunaId,
+        private readonly comuna : PetComuna,
         private readonly createdAt: PetCreatedAt,
         private readonly name: PetName,
         private readonly energy_level: PetEnergyLevel,

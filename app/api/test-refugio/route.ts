@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabase, supabaseAdmin } from "@/backend/infra/supabase/server";
-import { AuthRepository } from "@/backend/context/Auth/infra/AuthRepository";
+import { AuthRepository } from "@/backend/context/Auth/infra/SupabaseAuthRepository";
 import { RefugioRepository } from "@/backend/context/Refugio/infra/RefugioRepository";
 import { Auth } from "@/backend/context/Auth/domain/Auth";
 import { AuthEmail } from "@/backend/context/Auth/domain/AuthEmail";

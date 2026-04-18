@@ -6,6 +6,9 @@ import { ValidateError } from "../Shared/ValidateError";
 import { ResponseType } from "../Shared/type";
 import { ValidateDomainError } from "@/backend/error/ValidateDomainError";
 import { signIn } from "@/auth";
+import { SupabaseService } from "@/backend/infra/supabase/server";
+import { SupabaseAuthRepository } from "@/backend/context/Auth/infra/SupabaseAuthRepository";
+import { VerifyCredentialUseCase } from "@/backend/context/Auth/app/VerifyCredentialUseCase";
 
 
 
@@ -32,6 +35,10 @@ export default async function LogInAction(
     
     try {
         const parsedData = await parseSchema(LoginResponseSchema, data);
+        const clientDb = SupabaseService.getInstance().getClient();
+        const authRepository = new SupabaseAuthRepository(clientDb);
+        const useCase = new VerifyCredentialUseCase(authRepository);
+        await useCase.execute(parsedData.email, parsedData.password);
 
         await signIn("credentials", {
             username: parsedData.email,
@@ -58,7 +65,7 @@ export default async function LogInAction(
                 }
         return {
             error: true,
-            message: "Error inesperado intente nuevamente" + error
+            message: "Error inesperado intente nuevamente"  + (error instanceof Error ? ": " + error.message : "")
         };
     }
 }

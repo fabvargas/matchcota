@@ -1,10 +1,9 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { VerifyCredentialUseCase } from "./backend/context/Auth/app/VerifyCredentialUseCase";
-import { Session } from "./backend/context/Session/domain/Session";
-import { SessionUserId } from "./backend/context/Session/domain/SessionUserId";
-import { SessionExpireAt } from "./backend/context/Session/domain/SessionExpireAt";
 import { SaveSessionUseCase } from "./backend/context/Session/app/SaveSessionUseCase";
+import { SupabaseService } from "./backend/infra/supabase/server";
+import { SupabaseAuthRepository } from "./backend/context/Auth/infra/SupabaseAuthRepository";
 
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -19,7 +18,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
 
       async authorize(credentials) {
-        const authuseCase = new VerifyCredentialUseCase();
+        const clientDb = SupabaseService.getInstance().getClient();
+        const authRepository = new SupabaseAuthRepository(clientDb);
+        const authuseCase = new VerifyCredentialUseCase(authRepository);
         const sessionUsecase = new SaveSessionUseCase();
 
         const authUser = await authuseCase.execute(

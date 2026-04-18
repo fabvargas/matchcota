@@ -6,9 +6,9 @@ import { ValidateError } from "../Shared/ValidateError";
 import { RegisterAdoptanteUseCase } from "@/backend/context/Auth/app/RegisterAdoptanteUseCase";
 import { ValidateDomainError } from "@/backend/error/ValidateDomainError";
 import { RegisterRefugioUseCase } from "@/backend/context/Auth/app/RegisterRefugioUseCase";
-import { SupabaseAuthRepository } from "@/backend/context/Auth/infra/AuthRepository";
-import { SupabaseUserProfileRepository } from "@/backend/context/UserProfile/infra/UserProfileRepository";
-import { SupabaseRefugioRepository } from "@/backend/context/Refugio/infra/RefugioRepository";
+import { SupabaseAuthRepository } from "@/backend/context/Auth/infra/SupabaseAuthRepository";
+import { SupabaseUserProfileRepository } from "@/backend/context/UserProfile/infra/SupabaseUserProfileRepository";
+import { SupabaseRefugioRepository } from "@/backend/context/Refugio/infra/SupabaseRefugioRepository";
 import { SupabaseService } from "@/backend/infra/supabase/server";
 
 

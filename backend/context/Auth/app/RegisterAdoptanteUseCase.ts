@@ -1,63 +1,68 @@
 import { ValidateDomainError } from "@/backend/error/ValidateDomainError";
+
 import { Auth } from "../domain/Auth";
 import { AuthPassword } from "../domain/AuthPassword";
 import { AuthEmail } from "../domain/AuthEmail";
+import { AuthPasswordHashed } from "../domain/AuthPasswordHashed";
+
 import { UserProfile } from "../../UserProfile/domain/UserProfile";
 import { UserProfileName } from "../../UserProfile/domain/UserProfileName";
-import { RolId } from "../../Rol/RolId";
-import {AuthRepository } from "@/backend/context/Auth/domain/AuthRepository";
-import {UserProfileRepository } from "../../UserProfile/domain/UserProfileRepository";
-import { ProviderId } from "../../Provider/domain/ProviderId";
 
+import { AuthRepository } from "../domain/AuthRepository";
+import { UserProfileRepository } from "../../UserProfile/domain/UserProfileRepository";
 
-
-
+import hashPassword from "../domain/utils/hashPassword";
 
 export class RegisterAdoptanteUseCase {
 
-    constructor(
-        private readonly authRepository: AuthRepository,
-        private readonly userProfileRepository: UserProfileRepository
-    ){
+  constructor(
+    private authRepository: AuthRepository,
+    private userProfileRepository: UserProfileRepository
+  ) {}
 
-   }
+  async execute(
+    email: string,
+    password: string,
+    confirmPassword: string,
+    name: string,
+  ): Promise<void> {
 
-   async execute(
-    email:string,
-    password:string,
-    confirmPassword:string,
-    name:string,
-   ): Promise<void>{
-
-    if(password !== confirmPassword){
-        throw new ValidateDomainError("Las contraseñas no coinciden");
+    // ✅ 1. Validación básica
+    if (password !== confirmPassword) {
+      throw new ValidateDomainError("Las contraseñas no coinciden");
     }
 
-    const existingAuth = await this.authRepository.findByEmail(new AuthEmail(email));
+    // ✅ 2. Email único
+    const existingAuth = await this.authRepository.findByEmail(
+      new AuthEmail(email)
+    );
 
-    if(existingAuth){
-        throw new ValidateDomainError("Ya existe una cuenta con este correo electrónico");
+    if (existingAuth) {
+      throw new ValidateDomainError("El email ya está registrado");
     }
 
-    const existingProfile = await this.userProfileRepository.findByName(new UserProfileName(name));
+   const existingProfile = await this.userProfileRepository.findByName(
+      new UserProfileName(name)
+    );
 
-    if(existingProfile?.toPrimitives().name === name){
-        throw new ValidateDomainError("Ya existe un perfil asociado a este nombre");
+    if (existingProfile) {
+      throw new ValidateDomainError("El nombre de usuario ya está registrado");
     }
-    
+
+    // ✅ 4. Crear entidad Auth (con password ya hasheado)
     const auth = await Auth.createAdoptante(
-        new AuthEmail(email),
-       new AuthPassword(password),
-       new RolId(1),
-        new ProviderId(1)
+      new AuthEmail(email),
+      new AuthPassword(password)
     );
-    
-    const profile =  UserProfile.create(
-        auth.getId(),
-        new UserProfileName(name),
+
+    // ✅ 5. Crear perfil
+    const profile = UserProfile.create(
+      auth.getId(),
+      new UserProfileName(name),
     );
-    
+
+    // ⚠️ 6. Persistencia
     await this.authRepository.save(auth);
     await this.userProfileRepository.save(profile);
-   }
+  }
 }

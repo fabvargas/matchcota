@@ -5,6 +5,9 @@ import { ValidateError } from "../Shared/ValidateError";
 import { ResponseType } from "../Shared/type";
 import { ChangePasswordUseCase } from "@/backend/context/Auth/app/ChangePasswordUseCase";
 import { ValidateDomainError } from "@/backend/error/ValidateDomainError";
+import { SupabaseService } from "@/backend/infra/supabase/server";
+import { SupabaseAuthRepository } from "@/backend/context/Auth/infra/SupabaseAuthRepository";
+import { auth } from "@/auth";
 
 const ChangePasswordSchema = z.object({
   currentPassword: 
@@ -35,9 +38,24 @@ export default async function ChangePasswordAction(
         confirmNewPassword: formData.get("confirmNewPassword")
     }
     try{
+        const session = await auth();
+
+    if (!session?.user?.id) {
+      return {
+        error: true,
+        message: "No autenticado"
+      };
+    }
         const parsedData = await parseSchema(ChangePasswordSchema, data);
-        const useCase = new ChangePasswordUseCase();
-        await useCase.execute(parsedData.currentPassword, parsedData.newPassword, parsedData.confirmNewPassword);
+        const clienDb = SupabaseService.getInstance().getClient();
+        const authRepository = new SupabaseAuthRepository(clienDb);
+        const useCase = new ChangePasswordUseCase(authRepository);
+        await useCase.execute(
+            parsedData.currentPassword, 
+            parsedData.newPassword, 
+            parsedData.confirmNewPassword,
+            session.user.id
+        );
         return {
             error: false,
             message: "Contraseña cambiada exitosamente"

@@ -8,7 +8,7 @@
 import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { supabase, supabaseAdmin } from "@/backend/infra/supabase/server";
-import { AuthRepository } from "@/backend/context/Auth/infra/AuthRepository";
+import { AuthRepository } from "@/backend/context/Auth/infra/SupabaseAuthRepository";
 import { Auth } from "@/backend/context/Auth/domain/Auth";
 import { AuthEmail } from "@/backend/context/Auth/domain/AuthEmail";
 import { AuthId } from "@/backend/context/Auth/domain/AuthId";

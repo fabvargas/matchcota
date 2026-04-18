@@ -13,7 +13,7 @@ export class AuthTwoFactor {
 
     static validate(value: boolean): void {
         parseSchema(AuthTwoFactorSchema, value);
-        
+     
     }
 
     getValue(): boolean {
