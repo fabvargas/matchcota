@@ -11,9 +11,9 @@ export class AuthTwoFactor {
         AuthTwoFactor.validate(value);
     }
 
-    static validate(value: boolean): AuthTwoFactor {
+    static validate(value: boolean): void {
         parseSchema(AuthTwoFactorSchema, value);
-        return new AuthTwoFactor(value);
+        
     }
 
     getValue(): boolean {

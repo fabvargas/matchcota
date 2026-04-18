@@ -10,7 +10,7 @@ export class AuthDateCreated {
        AuthDateCreated.validate(value);
     }
 
-    static  validate(data: unknown): void {
+    static  validate(data: Date): void {
         parseSchema(DateSchema, data);
         
     }

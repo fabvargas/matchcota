@@ -1,43 +1,41 @@
 import { z } from "zod";
+import {PetType} from "@/backend/context/Pet/domain/PetType";
 import { parseSchema } from "@/backend/utils/parseSchema";
 
-export const PetBreedSchema = z.enum([
-  "Labrador", 
-  "Bulldog",
-  "Beagle", 
-  "Poodle", 
-  "Chihuahua", 
-  "Schnauzer", 
-  "Dachshund", 
-  "Boxer", 
-  "Rottweiler", 
-  "Yorkshire Terrier",
-  "Golden Retriever",
-  "Shih Tzu",
-  "Doberman",
-  "Great Dane",
-  "Siberian Husky",
-  "Cocker Spaniel",
-  "Bichon Frise",
-  "Mastiff",
-  "Pug",
-  "Border Collie",
-  "Mestizo"
-], { message: "Invalid Breed" });
+export const PetBreedSchema = z.object({
+  id: z.number().int().positive(),
+  name: z.string().min(1),
+  typeId: z.number().int().positive(),
+});
 
 export type PetBreedType = z.infer<typeof PetBreedSchema>;
 
 export class PetBreed {
   private constructor(
-    private readonly value: PetBreedType,
-  ) {}
-
-  static create(value: string): PetBreed {
-    const parsed = parseSchema(PetBreedSchema, value);
-    return new PetBreed(parsed);
+    private readonly id: number,
+    private readonly name: string,
+    private readonly type: PetType,
+  ) {
+    PetBreed.validate({ id, name, typeId: type.getValue() });
   }
 
-  getValue(): PetBreedType {
-    return this.value;
+  static validate(data: unknown): void {
+    parseSchema(PetBreedSchema, data);
+  }
+
+  static create(data: PetBreedType, type: PetType): PetBreed {
+    return new PetBreed(data.id, data.name, type);
+  }
+
+  getId(): number {
+    return this.id;
+  }
+
+  getName(): string {
+    return this.name;
+  }
+
+  getType(): PetType {
+    return this.type;
   }
 }

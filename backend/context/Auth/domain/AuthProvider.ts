@@ -1,7 +1,7 @@
 import {z} from "zod";
 import { parseSchema } from "@/backend/utils/parseSchema";
 
-const AuthProviderSchema = z.enum(["google","credentials"]);
+const AuthProviderSchema = z.enum(["google","email"]);
 
 export class AuthProvider {
 
@@ -11,17 +11,17 @@ export class AuthProvider {
         AuthProvider.validate(value);
     }
 
-    static validate(value: string ): AuthProvider {
+    static validate(value: string ): void {
         parseSchema(AuthProviderSchema, value);
-        return new AuthProvider(value);
+        
     }
 
     static createGoogle(): AuthProvider {
         return new AuthProvider("google");
     }
 
-    static createCredentials(): AuthProvider {
-        return new AuthProvider("credentials");
+    static createEmail(): AuthProvider {
+        return new AuthProvider("email");
     }
 
     
@@ -33,8 +33,8 @@ export class AuthProvider {
         return this.value === "google";
     }
 
-    isCredentials(): boolean {
-        return this.value === "credentials";
+    isEmail(): boolean {
+        return this.value === "email";
     }
 
 

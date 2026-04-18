@@ -1,3 +1,4 @@
+import { parseSchema } from "@/app/controller/Shared/parseSchema";
 import { DateType, DateSchema } from "../../Shared/DateType";
 
 export const AuthUpdatedDateSchema = DateSchema;
@@ -6,16 +7,16 @@ export type AuthUpdatedDateType = DateType;
 export class AuthUpdatedDate {
 
     constructor(
-        private value: AuthUpdatedDateType,
+        private value: Date,
     ){
         AuthUpdatedDate.validate(value);
     }
 
-    static validate(value: AuthUpdatedDateType): AuthUpdatedDate {
-        return new AuthUpdatedDate(value);
+    static validate(value: Date): void {
+        parseSchema(AuthUpdatedDateSchema, value);
     }
 
-    getValue(): AuthUpdatedDateType {
+    getValue(): Date {
         return this.value;
     }
 

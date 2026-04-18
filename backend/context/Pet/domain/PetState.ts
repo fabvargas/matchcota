@@ -1,7 +1,7 @@
 import {z} from "zod";
 import { parseSchema } from "@/backend/utils/parseSchema";
 
-export const PetStateSchema = z.enum(["Disponible", "En Proceso", "Adoptado"], {message: "Invalid State"});
+export const PetStateSchema = z.enum(["Disponible", "Pendiente", "Adoptado"], {message: "Invalid State"});
 
 export type PetStateType = z.infer<typeof PetStateSchema>;
 
@@ -26,8 +26,8 @@ export class PetState{
         return new PetState("Adoptado");
     }
 
-    static createInProcess(): PetState {
-        return new PetState("En Proceso");
+    static createPending(): PetState {
+        return new PetState("Pendiente");
     }
 
     getValue(): PetStateType {
@@ -42,8 +42,8 @@ export class PetState{
         return this.value === "Adoptado";
     }
 
-    isInProcess(): boolean {
-        return this.value === "En Proceso";
+    isPending(): boolean {
+        return this.value === "Pendiente";
     }
     
 }

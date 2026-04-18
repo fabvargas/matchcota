@@ -6,6 +6,10 @@ import { ValidateError } from "../Shared/ValidateError";
 import { RegisterAdoptanteUseCase } from "@/backend/context/Auth/app/RegisterAdoptanteUseCase";
 import { ValidateDomainError } from "@/backend/error/ValidateDomainError";
 import { RegisterRefugioUseCase } from "@/backend/context/Auth/app/RegisterRefugioUseCase";
+import { SupabaseAuthRepository } from "@/backend/context/Auth/infra/AuthRepository";
+import { SupabaseUserProfileRepository } from "@/backend/context/UserProfile/infra/UserProfileRepository";
+import { SupabaseRefugioRepository } from "@/backend/context/Refugio/infra/RefugioRepository";
+import { SupabaseService } from "@/backend/infra/supabase/server";
 
 
 const RegisterSchema = z.object({
@@ -52,10 +56,20 @@ export async function RegisterAction(
 
     try{
         const parsedData = await parseSchema(RegisterSchema, data);
-
+        const dbClient = SupabaseService.getInstance().getClient();
+        const authRepository = new SupabaseAuthRepository(dbClient);
+        const userProfileRepository = new SupabaseUserProfileRepository(dbClient);
+        const refugioRepository = new SupabaseRefugioRepository(dbClient);
+        
         const useCases = {
-         Adoptante: new RegisterAdoptanteUseCase(),
-        Fundacion: new RegisterRefugioUseCase(),
+            Adoptante: new RegisterAdoptanteUseCase(
+              authRepository,
+              userProfileRepository
+            ),
+        Fundacion: new RegisterRefugioUseCase(
+            authRepository,
+            refugioRepository
+        ),
         } as const;
 
         const useCase = useCases[parsedData.rol];
@@ -96,7 +110,7 @@ export async function RegisterAction(
                 }
         return {
             error: true,
-            message: "Error inesperado intente nuevamente"
+            message: "Error inesperado: " + (error instanceof Error ? error.message : String(error))
         }
     }
 

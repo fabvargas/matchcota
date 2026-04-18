@@ -1,13 +1,12 @@
 import { UserProfileId } from "./UserProfileId";
 import { UserProfileName } from "./UserProfileName";
-import { UserProfileComuna } from "./UserProfleComuna";
 import { UserProfileTelephone } from "./UserProfileTelephone";
 import { UserProfileAddress } from "./UserProfileAddress";
-import { ComunaType } from "../../Shared/ComunaType";
 import { AuthId } from "../../Auth/domain/AuthId";
 import { UserProfileImgUrl } from "./UserProfileImgUrl";
 import { UserProfileUpdatedAt } from "./UserProfileUpdatedAt";
 import { UserProfileDescription } from "./UserProfileDescription";
+import { ComunaId } from "../../Comuna/ComunaId";
 
 
 export class UserProfile{
@@ -20,8 +19,8 @@ export class UserProfile{
         private readonly address?:UserProfileAddress,
         private readonly img_url?: UserProfileImgUrl,
         private readonly description?: UserProfileDescription,
-        private readonly comuna?:UserProfileComuna,
-        private readonly updateAt?: UserProfileUpdatedAt,
+        private readonly comunaId?:ComunaId,
+        private readonly updatedAt?: UserProfileUpdatedAt,
     ){}
 
     static  create(
@@ -29,14 +28,14 @@ export class UserProfile{
         name:UserProfileName,
         telephone?:UserProfileTelephone,
         address?:UserProfileAddress,
-        comuna?:UserProfileComuna,
+        comuna?:ComunaId,
         img_url?: UserProfileImgUrl,
         description?: UserProfileDescription,
-        updateAt?: UserProfileUpdatedAt
+        updatedAt?: UserProfileUpdatedAt
 
     ): UserProfile {
         const id =  UserProfileId.create();
-        return new UserProfile(id, authId, name, telephone, address, img_url, description, comuna, updateAt);
+        return new UserProfile(id, authId, name, telephone, address, img_url, description, comuna, updatedAt);
     }
 
     toPrimitives() {
@@ -46,10 +45,10 @@ export class UserProfile{
             name: this.name.getValue(),
             telephone: this.telephone?.getValue() || null,
             address: this.address?.getValue() || null,
-            comuna: this.comuna?.getValue() || null,
+            comunaId: this.comunaId?.getValue() || null,
             img_url: this.img_url?.getValue() || null,
             description: this.description?.getValue() || null,
-            updateAt: this.updateAt?.getValue() || null
+            updatedAt: this.updatedAt?.getValue() || null
 
         }
     }
@@ -60,10 +59,10 @@ export class UserProfile{
         name: string,
         telephone: string | null,
         address: string | null,
-        comuna: ComunaType | null,
+        comunaId: number | null,
         img_url: string | null,
         description: string | null,
-        updateAt: Date | null
+        updatedAt: Date | null
     }): UserProfile {
         return new UserProfile(
             new UserProfileId(primitives.id),
@@ -73,8 +72,8 @@ export class UserProfile{
             primitives.address ? new UserProfileAddress(primitives.address) : undefined,
             primitives.img_url ? new UserProfileImgUrl(primitives.img_url) : undefined,
             primitives.description ? new UserProfileDescription(primitives.description) : undefined,
-            primitives.comuna ? new UserProfileComuna(primitives.comuna) : undefined,
-            primitives.updateAt ? new UserProfileUpdatedAt(primitives.updateAt) : undefined
+            primitives.comunaId ? new ComunaId(primitives.comunaId) : undefined,
+            primitives.updatedAt ? new UserProfileUpdatedAt(primitives.updatedAt) : undefined
         );
     }
 }

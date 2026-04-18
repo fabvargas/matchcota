@@ -1,7 +1,17 @@
 import {z} from "zod";
 import { parseSchema } from "@/backend/utils/parseSchema";
 
-export const PetPersonalitySchema= z.enum(["Amigable", "Juguetón", "Tranquilo", "Curioso", "Tímido", "Activo"], {message: "Invalid Personality"});
+export const PetPersonalitySchema= z.enum([
+  "Amigable",
+  "Juguetón",
+  "Tranquilo",
+  "Curioso",
+  "Tímido",
+  "Activo",
+  "Cariñoso",
+  "Protector",
+  "Sociable"
+], {message: "Invalid Personality"});
 
 export type PetPersonalityType = z.infer<typeof PetPersonalitySchema>;
 

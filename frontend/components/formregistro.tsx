@@ -14,9 +14,11 @@ import FormMessages from "./FormMessages";
 import { useSubmitForm } from "../hooks/useSubmitForm";
 
 
+
 export default function Formregistro() {
    
      const { state, isPending, handleSubmit } = useSubmitForm(RegisterAction, { error: false, message: "" });
+
 
   return (
 

@@ -4,8 +4,10 @@ import { AuthPassword } from "../domain/AuthPassword";
 import { AuthEmail } from "../domain/AuthEmail";
 import { UserProfile } from "../../UserProfile/domain/UserProfile";
 import { UserProfileName } from "../../UserProfile/domain/UserProfileName";
-import hashPassword from "../domain/utils/hashPassword";
-import { AuthPasswordHashed } from "../domain/AuthPasswordHashed";
+import { RolId } from "../../Rol/RolId";
+import {AuthRepository } from "@/backend/context/Auth/domain/AuthRepository";
+import {UserProfileRepository } from "../../UserProfile/domain/UserProfileRepository";
+import { ProviderId } from "../../Provider/domain/ProviderId";
 
 
 
@@ -13,7 +15,10 @@ import { AuthPasswordHashed } from "../domain/AuthPasswordHashed";
 
 export class RegisterAdoptanteUseCase {
 
-    constructor(){
+    constructor(
+        private readonly authRepository: AuthRepository,
+        private readonly userProfileRepository: UserProfileRepository
+    ){
 
    }
 
@@ -28,10 +33,23 @@ export class RegisterAdoptanteUseCase {
         throw new ValidateDomainError("Las contraseñas no coinciden");
     }
 
+    const existingAuth = await this.authRepository.findByEmail(new AuthEmail(email));
 
+    if(existingAuth){
+        throw new ValidateDomainError("Ya existe una cuenta con este correo electrónico");
+    }
+
+    const existingProfile = await this.userProfileRepository.findByName(new UserProfileName(name));
+
+    if(existingProfile?.toPrimitives().name === name){
+        throw new ValidateDomainError("Ya existe un perfil asociado a este nombre");
+    }
+    
     const auth = await Auth.createAdoptante(
         new AuthEmail(email),
        new AuthPassword(password),
+       new RolId(1),
+        new ProviderId(1)
     );
     
     const profile =  UserProfile.create(
@@ -39,6 +57,7 @@ export class RegisterAdoptanteUseCase {
         new UserProfileName(name),
     );
     
-        console.log(auth,profile)
+    await this.authRepository.save(auth);
+    await this.userProfileRepository.save(profile);
    }
 }

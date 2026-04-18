@@ -2,12 +2,17 @@ import { AuthPassword } from "../domain/AuthPassword";
 import { AuthEmail } from "../domain/AuthEmail";
 import { ValidateDomainError } from "@/backend/error/ValidateDomainError";
 import { Auth } from "../domain/Auth";
+import { AuthRepository } from "../domain/AuthRepository";
+
+
 
 
 
 export class VerifyCredentialUseCase {
 
-    constructor(){
+    constructor(
+        private readonly authRepository: AuthRepository,
+    ){
 
    }
 
@@ -17,29 +22,24 @@ export class VerifyCredentialUseCase {
    ): Promise<Auth>{
 
 
-    // Aquí deberías buscar el Auth por email en tu repositorio
-    const auth = await Auth.createAdoptante(
-        new AuthEmail(email),
-       new AuthPassword(password)
-    );
+    const findAuth = await this.authRepository.findByEmail(new AuthEmail(email));
 
-    if(!auth){
+    if(!findAuth){
         throw new ValidateDomainError("Credenciales inválidas");
     }
 
-    // repository.getAuthByEmail(email);
-    if(auth.getEmail().getValue() !== new AuthEmail(email).getValue()){
+    if(findAuth.getEmail().getValue() !== new AuthEmail(email).getValue()){
         throw new ValidateDomainError("Credenciales inválidas");
     }
 
-    const compared = await auth.comparePassword(new AuthPassword(password));
+    const compared = await findAuth.comparePassword(new AuthPassword(password));
 
     if(!compared){
         throw new ValidateDomainError("Credenciales inválidas");
     }
 
   
-    return auth
+    return findAuth;
     
    }
 }
