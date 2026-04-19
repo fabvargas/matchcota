@@ -1,39 +1,77 @@
+import { ValidateDomainError } from "@/backend/error/ValidateDomainError";
+import { AuthId } from "../../Auth/domain/AuthId";
 
+import { ComunaType } from "../../Shared/ComunaType";
+import { UserProfileRepository } from "../domain/UserProfileRepository";
+import { UserProfile } from "../domain/UserProfile";
 
-
-type UserProfile = {
-    name: string;
-    address?: string;
-    telephone?: string;
-    description?: string;
-    comuna?: string;
-    codigoPostal?: string;
-}
-
+type UserProfileType = {
+  id: string;
+  authId: string;
+  name: string;
+  img_url?: string;
+  address?: string;
+  telephone?: string;
+  description?: string;
+  comuna?: ComunaType;
+};
 
 export class UpdateUserProfileUseCase {
+  constructor(
+    private userProfile: UserProfileRepository
+  ) {}
 
-    constructor(
-       
-    ){}
+  async execute(
+    idAuth: string,
+    name: string,
+    img_url?: string,
+    address?: string,
+    telephone?: string,
+    comuna?: string,
+    description?: string,
+  ): Promise<UserProfileType> {
 
-    async execute(
-        name: string,
-        address?: string,
-        telephone?: string,
-        comuna?: string,
-    ): Promise<UserProfile> {
+    // 🔥 1. Value Object
+    const idAuthObj = new AuthId(idAuth);
 
-        const data = {
-            name,
-            address,
-            telephone,
-            comuna,
-        };
+    // 🔥 2. Buscar usuario
+    const user = await this.userProfile.findByAuthId(idAuthObj);
 
-        
-       return data;
-
+    if (!user) {
+      throw new ValidateDomainError("Usuario no encontrado");
     }
 
+    // 🔥 3. Crear nueva entidad (inmutable)
+    const newUser = UserProfile.fromPrimitives({
+      ...user.toPrimitives(),
+      name,
+      address: address ?? null,
+      telephone: telephone ?? null,
+      description: description ?? null,
+      comuna: (comuna as ComunaType) ?? null,
+    img_url: img_url ?? null,
+    });
+
+    // 🔥 4. (Opcional) Validación de nombre único
+    const nameExisting = await this.userProfile.findByName(newUser.getName());
+
+    if (nameExisting && nameExisting.toPrimitives().authId !== idAuth) {
+      throw new ValidateDomainError("El nombre ya está en uso");
+    }
+
+    // 🔥 5. Persistir
+    await this.userProfile.update(newUser);
+
+    // 🔥 6. Retornar DTO limpio
+    const userData = newUser.toPrimitives();
+
+    return {
+      ...userData,
+      address: userData.address ?? undefined,
+      telephone: userData.telephone ?? undefined,
+      description: userData.description ?? undefined,
+      img_url: userData.img_url ?? undefined,
+      comuna: userData.comuna ?? undefined,
+    };
+  }
 }

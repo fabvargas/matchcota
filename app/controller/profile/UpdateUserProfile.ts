@@ -1,11 +1,13 @@
 
-import { UserProfileType, ResponseType, RefugioProfileType } from "../Shared/type";
+import { UserProfileType, ResponseType } from "../Shared/type";
 import {z} from "zod";
 import { parseSchema } from "../Shared/parseSchema";
-import { UpdateRefugioProfileUseCase } from "@/backend/context/Refugio/app/UpdateRefugioProfile";
 import { UpdateUserProfileUseCase } from "@/backend/context/UserProfile/app/UpdateUserProfileUseCase";
+import { SupabaseService } from "@/backend/infra/supabase/server";
+import { SupabaseUserProfileRepository } from "@/backend/context/UserProfile/infra/SupabaseUserProfileRepository";
+import { auth } from "@/auth";
 
-const RefufioProfileSchema = z.object({
+const UserProfileSchema = z.object({
   name: z
   .string()
   .min(1, "El nombre es requerido")
@@ -23,7 +25,7 @@ const RefufioProfileSchema = z.object({
 });
 
 
-export default async function UpdateRefugioProfile(
+export default async function UpdateUserProfile(
     name: string,
     address?: string,
     telephone?: string,
@@ -33,21 +35,35 @@ export default async function UpdateRefugioProfile(
 
     try{
     const parsedData = await parseSchema(
-        RefufioProfileSchema, 
+        UserProfileSchema, 
         { 
         name, 
         address, 
         telephone, 
         comuna, 
     });
+    const dbClient = SupabaseService.getInstance().getClient();
+    const userProfileRepository = new SupabaseUserProfileRepository(dbClient);
+    const useCase = new UpdateUserProfileUseCase(userProfileRepository);
 
-    const useCase = new UpdateUserProfileUseCase();
+    const session =  await auth();
+    if (!session?.user?.id) {
+      return {
+        error: true,
+        message: "No autenticado"
+      };
+    }
+
+    const idAuth = session.user.id;
 
     const userProfile = await useCase.execute(
+        idAuth,
         parsedData.name,
+        undefined,
         parsedData.address,
         parsedData.telephone,
-        parsedData.comuna
+        parsedData.comuna,
+        undefined
     );
     
     return {

@@ -53,7 +53,10 @@ export class SupabaseRefugioRepository implements RefugioRepository {
     const { data, error } = await this.supabase
       .from(SupabaseRefugioRepository.TABLE)
       .select("*")
-      .eq(SupabaseRefugioRepository.COLUMNS.ID, id.getValue())
+      .eq(
+        SupabaseRefugioRepository.COLUMNS.ID,
+        id.getValue()
+      )
       .maybeSingle();
 
     if (error) {
@@ -101,6 +104,30 @@ export class SupabaseRefugioRepository implements RefugioRepository {
     if (!data) return null;
 
     return this.mapToDomain(data);
+  }
+
+  async update(refugio: Refugio): Promise<void> {
+    const data = refugio.toPrimitives();
+
+    const { error } = await this.supabase
+      .from(SupabaseRefugioRepository.TABLE)
+      .update({
+        [SupabaseRefugioRepository.COLUMNS.NAME]: data.name,
+        [SupabaseRefugioRepository.COLUMNS.ADDRESS]: data.address,
+        [SupabaseRefugioRepository.COLUMNS.TELEPHONE]: data.telephone,
+        [SupabaseRefugioRepository.COLUMNS.DESCRIPTION]: data.description,
+        [SupabaseRefugioRepository.COLUMNS.IMG_URL]: data.img_url,
+        [SupabaseRefugioRepository.COLUMNS.COMUNA]: data.comuna,
+        [SupabaseRefugioRepository.COLUMNS.CODIGO_POSTAL]: data.codigoPostal,
+        [SupabaseRefugioRepository.COLUMNS.UPDATED_AT]: new Date()
+      })
+      .eq(SupabaseRefugioRepository.COLUMNS.ID, data.id);
+
+    if (error) {
+      throw new Error("Error updating refugio: " + error.message);
+    }
+
+    
   }
 
   private mapToDomain(data: any): Refugio {

@@ -4,6 +4,7 @@ import { Auth } from "../domain/Auth";
 import { AuthEmail } from "../domain/AuthEmail";
 import { AuthId } from "../domain/AuthId";
 
+
 export class SupabaseAuthRepository implements AuthRepository {
 
   // ✅ tabla
@@ -145,6 +146,19 @@ private mapToDomain(data: any): Auth {
           throw new Error("Error updating password: " + error.message);
         }
       }
+
+      async delete(id: AuthId): Promise<void> {
+        const { error } = await this.supabase
+          .from(SupabaseAuthRepository.TABLE)
+          .delete()
+          .eq(SupabaseAuthRepository.COLUMNS.ID, id.getValue());
+
+        if (error) {
+          throw new Error("Error deleting auth: " + error.message);
+        }
+      }
+
+     
 
   private mapProviderFromDB(id: number): string {
     const map: Record<number, string> = {

@@ -44,6 +44,10 @@ export class Refugio{
         return this.comuna?.getComunas() || [];
     }
 
+    getName(): RefugioName {
+        return this.name;
+    }
+
     isComuna(value: string): boolean {
         return this.comuna?.isComuna(value) || false;
     }

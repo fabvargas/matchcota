@@ -1,3 +1,4 @@
+
 import { Auth } from "./Auth";
 import { AuthEmail } from "./AuthEmail";
 import { AuthId } from "./AuthId";
@@ -9,5 +10,8 @@ export interface AuthRepository {
 
   findById(id: AuthId): Promise<Auth | null>;
 
+
   updatePassword(id: AuthId, newPasswordHashed: string): Promise<void>;
+
+  delete(id: AuthId): Promise<void>;
 }

@@ -1,8 +1,11 @@
 
-import { RefugioProfileType, ResponseType } from "../Shared/type";
+import { RefugioType, ResponseType } from "../Shared/type";
 import {z} from "zod";
 import { parseSchema } from "../Shared/parseSchema";
 import { UpdateRefugioProfileUseCase } from "@/backend/context/Refugio/app/UpdateRefugioProfile";
+import { SupabaseRefugioRepository } from "@/backend/context/Refugio/infra/SupabaseRefugioRepository";
+import { SupabaseService } from "@/backend/infra/supabase/server";
+import { auth } from "@/auth";
 
 const RefufioProfileSchema = z.object({
   name: z
@@ -35,7 +38,7 @@ export default async function UpdateRefugioProfile(
     description?: string,
     comuna?: string,
     codigoPostal?: string
-):Promise<ResponseType<Omit<RefugioProfileType, "id">>> {
+):Promise<ResponseType<Omit<RefugioType, "id">>> {
 
     try{
     const parsedData = await parseSchema(
@@ -48,16 +51,27 @@ export default async function UpdateRefugioProfile(
         comuna, 
         codigoPostal 
     });
+    const dbClient = SupabaseService.getInstance().getClient();
+    const refugioRepository = new SupabaseRefugioRepository(dbClient);
+    const useCase = new UpdateRefugioProfileUseCase(refugioRepository);
+    const session =  await auth();
+    if (!session?.user?.id) {
+      return {
+        error: true,
+        message: "No autenticado"
+      };
+    }
 
-    const useCase = new UpdateRefugioProfileUseCase();
+    const idAuth = session.user.id;
 
     const refugioProfile = await useCase.execute(
-        parsedData.name,
-        parsedData.address,
-        parsedData.telephone,
-        parsedData.description,
-        parsedData.comuna,
-        parsedData.codigoPostal
+     idAuth,
+     parsedData.name,
+     parsedData.address,
+     parsedData.telephone,
+     parsedData.description,
+     parsedData.comuna,
+     parsedData.codigoPostal
     );
     
     return {

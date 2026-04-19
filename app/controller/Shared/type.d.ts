@@ -4,20 +4,25 @@ export type ResponseType<T> = {
   data?: T;
 };
 
-export type UserProfileType={
+type UserProfileType = {
   id: string;
+  authId: string;
   name: string;
-  telephone?: string;
-  address?: string;
-  comuna?: string;
-}
-
-export type RefugioProfileType={
-  id: string;
-  name: string;
+  img_url?: string;
   address?: string;
   telephone?: string;
   description?: string;
-  comuna?: string;
-  codigoPostal?: string;
+  comuna?: ComunaType;
+};
+
+export type RefugioType = {
+  id: string,
+  authId: string,
+  name: string,
+  img_url: string | undefined,
+  address: string | undefined,
+  telephone: string | undefined,
+  description: string | undefined,
+  comuna: ComunaType | undefined,
+  codigoPostal: string | undefined
 }

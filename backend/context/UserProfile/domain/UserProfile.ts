@@ -39,6 +39,10 @@ export class UserProfile{
         return new UserProfile(id, authId, name, telephone, address, img_url, description, comuna, updateAt);
     }
 
+    getName(): UserProfileName {
+        return this.name;
+    }
+
     toPrimitives() {
         return {
             id: this.id.getValue(),
