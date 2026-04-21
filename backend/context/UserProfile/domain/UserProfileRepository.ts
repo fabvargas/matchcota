@@ -7,5 +7,6 @@ export interface UserProfileRepository {
   findById(id: string): Promise<UserProfile | null>;
   findByName(name: UserProfileName): Promise<UserProfile | null>;
   findByAuthId(authId: AuthId): Promise<UserProfile | null>;
+  
   update(userProfile: UserProfile): Promise<void>;
 }

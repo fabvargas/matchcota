@@ -8,6 +8,8 @@ import { RefugioTelephone } from "./RefugioTelephone";
 import { ComunaType } from "../../Shared/ComunaType";
 import { AuthId } from "../../Auth/domain/AuthId";
 import { RefugioImgUrl } from "./RefugioImgUrl";
+import { RefugioRegion } from "./RefugioRegion";
+import { RegionType } from "../../Shared/RegionType";
 
 export class Refugio{
 
@@ -21,6 +23,7 @@ export class Refugio{
         private readonly description?:RefugioDescription ,
         private readonly comuna?:RefugioComuna,
         private readonly codigoPostal?:RefugioCodigoPostal,
+        private readonly region?: RefugioRegion
     ){
         
     }
@@ -34,9 +37,10 @@ export class Refugio{
         description?:RefugioDescription,
         comuna?:RefugioComuna,
         codigoPostal?:RefugioCodigoPostal,
+        region?: RefugioRegion
     ): Refugio {
         const id =  RefugioId.create();
-        return new Refugio( id, authId, name, img_url, address, telephone, description, comuna, codigoPostal);
+        return new Refugio( id, authId, name, img_url, address, telephone, description, comuna, codigoPostal, region);
     }
 
 
@@ -63,7 +67,8 @@ export class Refugio{
             description: this.description?.getValue() || null,
             comuna: this.comuna?.getValue() || null,
             codigoPostal: this.codigoPostal?.getValue() || null,
-            img_url: this.img_url?.getValue() || null
+            img_url: this.img_url?.getValue() || null,
+            region: this.region?.getValue() || null
         }
     }
 
@@ -76,7 +81,8 @@ export class Refugio{
         description: string | null  ,
         comuna: ComunaType | null,
         codigoPostal: string | null,
-        img_url: string | null
+        img_url: string | null,
+        region: RegionType | null
     }): Refugio {
         return new Refugio(
             new RefugioId(primitives.id),
@@ -87,7 +93,8 @@ export class Refugio{
             primitives.telephone == null ? undefined : new RefugioTelephone(primitives.telephone),
             primitives.description == null ? undefined : new RefugioDescription(primitives.description),
             primitives.comuna == null ? undefined : new RefugioComuna(primitives.comuna),
-            primitives.codigoPostal == null ? undefined : new RefugioCodigoPostal(primitives.codigoPostal)
+            primitives.codigoPostal == null ? undefined : new RefugioCodigoPostal(primitives.codigoPostal),
+            primitives.region == null ? undefined : new RefugioRegion(primitives.region)
         )
     }
 }

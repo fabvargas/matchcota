@@ -1,4 +1,4 @@
-
+"use server"
 import { UserProfileType, ResponseType } from "../Shared/type";
 import {z} from "zod";
 import { parseSchema } from "../Shared/parseSchema";
@@ -6,6 +6,9 @@ import { UpdateUserProfileUseCase } from "@/backend/context/UserProfile/app/Upda
 import { SupabaseService } from "@/backend/infra/supabase/server";
 import { SupabaseUserProfileRepository } from "@/backend/context/UserProfile/infra/SupabaseUserProfileRepository";
 import { auth } from "@/auth";
+import { revalidatePath } from "next/cache";
+
+
 
 const UserProfileSchema = z.object({
   name: z
@@ -22,26 +25,37 @@ const UserProfileSchema = z.object({
   comuna: z
   .string()
   .max(100, "La comuna debe tener máximo 100 caracteres").optional(),
+  description: z
+  .string()
+  .max(500, "La descripción debe tener máximo 500 caracteres").optional(),
+  region: z
+  .string()
+  .max(100, "La región debe tener máximo 100 caracteres").optional(),
+
 });
 
 
-export default async function UpdateUserProfile(
-    name: string,
-    address?: string,
-    telephone?: string,
-    comuna?: string,
-   
-):Promise<ResponseType<Omit<UserProfileType, "id">>> {
+export default async function UpdateUserProfileAction(
+  prevState: ResponseType<Omit<UserProfileType, "id">>,
+  formData: FormData
+): Promise<ResponseType<Omit<UserProfileType, "id">>> {
+
+    const data = {
+name: formData.get("name")?.toString() ?? "",
+region: formData.get("region")?.toString() ?? "",
+comuna: formData.get("comuna")?.toString() ?? "",
+address: formData.get("address")?.toString() ?? "",
+telephone: formData.get("telephone")?.toString() ?? "",
+description: formData.get("description")?.toString() ?? "",
+    }
+
+    console.log("Data recibida en UpdateUserProfileAction:", data);
 
     try{
     const parsedData = await parseSchema(
         UserProfileSchema, 
-        { 
-        name, 
-        address, 
-        telephone, 
-        comuna, 
-    });
+        data);  
+  
     const dbClient = SupabaseService.getInstance().getClient();
     const userProfileRepository = new SupabaseUserProfileRepository(dbClient);
     const useCase = new UpdateUserProfileUseCase(userProfileRepository);
@@ -56,16 +70,22 @@ export default async function UpdateUserProfile(
 
     const idAuth = session.user.id;
 
+
+
     const userProfile = await useCase.execute(
         idAuth,
         parsedData.name,
-        undefined,
+        undefined, // img_url no se actualiza en este formulario
         parsedData.address,
         parsedData.telephone,
         parsedData.comuna,
-        undefined
+        parsedData.description,
+        parsedData.region
     );
-    
+
+     
+    revalidatePath("/profile");
+
     return {
         error: false,
         message: "Perfil de usuario actualizado exitosamente",
@@ -77,7 +97,10 @@ export default async function UpdateUserProfile(
         error: true,
         message: error instanceof Error ? error.message : "Error inesperado"
     }
+
+        
     }
 
+       
     
 }

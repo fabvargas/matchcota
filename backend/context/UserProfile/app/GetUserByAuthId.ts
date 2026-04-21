@@ -1,3 +1,4 @@
+
 import { ValidateDomainError } from "@/backend/error/ValidateDomainError";
 import { UserProfileRepository } from "../domain/UserProfileRepository";
 import { ComunaType } from "../../Shared/ComunaType";
@@ -14,7 +15,7 @@ export class GetUserByAuthId {
   ): Promise<UserProfileType> {
 
     const userProfile = await this.userProfileRepository.findByAuthId(new AuthId(authId));
-    
+  
     if (!userProfile) {
         throw new ValidateDomainError("Usuario no encontrado");
     }
@@ -26,7 +27,8 @@ export class GetUserByAuthId {
         telephone: userProfileData.telephone ?? undefined,
         description: userProfileData.description ?? undefined,
         img_url: userProfileData.img_url ?? undefined,
-        comuna: userProfileData.comuna ?? undefined
+        comuna: userProfileData.comuna ?? undefined,
+        region: userProfileData.region ?? undefined
     };
   }
 
@@ -41,4 +43,5 @@ type UserProfileType = {
   telephone?: string;
   description?: string;
   comuna?: ComunaType;
+  region?: string;
 };

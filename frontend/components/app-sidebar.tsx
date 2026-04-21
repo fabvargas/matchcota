@@ -19,6 +19,8 @@ import {
   HeartHandshake,
   Bookmark,
 } from "lucide-react";
+import { signOut } from "next-auth/react";
+import { Button } from "./ui/button";
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -106,10 +108,10 @@ export function AppSidebar() {
 
       {/* FOOTER */}
       <SidebarFooter className="p-4 border-t">
-        <Link href="/" className="flex items-center gap-2 text-sm text-gray-600 hover:text-red-500 transition">
+        <Button className="bg-white flex items-center gap-2 text-sm text-gray-600 hover:text-red-500 transition" onClick={() => signOut()}>
           <LogOut size={16} />
           Cerrar sesión
-        </Link>
+        </Button>
       </SidebarFooter>
 
     </Sidebar>

@@ -27,7 +27,8 @@ export class GetRefugioByAuthId {
         description: refugioData.description ?? undefined,
         img_url: refugioData.img_url ?? undefined,
         codigoPostal: refugioData.codigoPostal ?? undefined,
-        comuna: refugioData.comuna ?? undefined
+        comuna: refugioData.comuna ?? undefined,
+        region: refugioData.region ?? undefined
     };
   }
   
@@ -42,5 +43,7 @@ type RefugioType = {
   telephone: string | undefined,
   description: string | undefined,
   comuna: ComunaType | undefined,
-  codigoPostal: string | undefined
+  codigoPostal: string | undefined,
+  region: string | undefined
+
 }

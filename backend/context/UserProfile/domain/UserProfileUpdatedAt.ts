@@ -7,7 +7,7 @@ export type UserProfileUpdatedAtType = DateType;
 
 export class UserProfileUpdatedAt {
     constructor(
-        private readonly value: UserProfileUpdatedAtType
+        private  value: UserProfileUpdatedAtType
     ) {
         UserProfileUpdatedAt.validate(value);
     }
@@ -18,5 +18,9 @@ export class UserProfileUpdatedAt {
 
     getValue(): UserProfileUpdatedAtType {
         return this.value;
+    }
+
+    update(): void {
+        this.value = new Date();
     }
 }

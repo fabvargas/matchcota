@@ -7,10 +7,8 @@ import { AuthId } from "../../Auth/domain/AuthId";
 
 export class SupabaseRefugioRepository implements RefugioRepository {
 
-  // ✅ tabla
   private static readonly TABLE = "refugio_profile";
 
-  // ✅ columnas
   private static readonly COLUMNS = {
     ID: "id_refugio",
     AUTH_ID: "auth_id",
@@ -26,22 +24,59 @@ export class SupabaseRefugioRepository implements RefugioRepository {
 
   constructor(private supabase: SupabaseClient) {}
 
+  // 🔥 helper interno (igual que user profile)
+  private async findComunaId(
+    comunaNombre?: string,
+    regionNombre?: string
+  ): Promise<number | undefined> {
+
+    if (!comunaNombre) return undefined;
+
+    let query = this.supabase
+      .from("comuna")
+      .select(`
+        id_comuna,
+        region:region (
+          nombre
+        )
+      `)
+      .eq("nombre", comunaNombre);
+
+    if (regionNombre) {
+      query = query.eq("region.nombre", regionNombre);
+    }
+
+    const { data, error } = await query.single();
+
+    if (error) {
+      if (error.code === "PGRST116") return undefined;
+      throw new Error("Error finding comuna: " + error.message);
+    }
+
+    return data.id_comuna;
+  }
+
   async save(refugio: Refugio): Promise<void> {
     const data = refugio.toPrimitives();
+
+    const idComuna = await this.findComunaId(
+      data.comuna ?? undefined,
+      data.region ?? undefined
+    );
 
     const { error } = await this.supabase
       .from(SupabaseRefugioRepository.TABLE)
       .upsert({
-        [SupabaseRefugioRepository.COLUMNS.ID]: data.id,
-        [SupabaseRefugioRepository.COLUMNS.AUTH_ID]: data.authId,
-        [SupabaseRefugioRepository.COLUMNS.NAME]: data.name,
-        [SupabaseRefugioRepository.COLUMNS.ADDRESS]: data.address,
-        [SupabaseRefugioRepository.COLUMNS.TELEPHONE]: data.telephone,
-        [SupabaseRefugioRepository.COLUMNS.DESCRIPTION]: data.description,
-        [SupabaseRefugioRepository.COLUMNS.IMG_URL]: data.img_url,
-        [SupabaseRefugioRepository.COLUMNS.COMUNA]: data.comuna,
-        [SupabaseRefugioRepository.COLUMNS.CODIGO_POSTAL]: data.codigoPostal,
-        [SupabaseRefugioRepository.COLUMNS.UPDATED_AT]: new Date()
+        id_refugio: data.id,
+        auth_id: data.authId,
+        nombre: data.name,
+        direccion: data.address,
+        telefono: data.telephone,
+        descripcion: data.description,
+        imagen_url: data.img_url,
+        id_comuna: idComuna,
+        codigo_postal: data.codigoPostal,
+        fecha_actualizacion: new Date()
       });
 
     if (error) {
@@ -51,12 +86,17 @@ export class SupabaseRefugioRepository implements RefugioRepository {
 
   async findById(id: RefugioId): Promise<Refugio | null> {
     const { data, error } = await this.supabase
-      .from(SupabaseRefugioRepository.TABLE)
-      .select("*")
-      .eq(
-        SupabaseRefugioRepository.COLUMNS.ID,
-        id.getValue()
-      )
+      .from("refugio_profile")
+      .select(`
+        *,
+        comuna:comuna (
+          nombre,
+          region:region (
+            nombre
+          )
+        )
+      `)
+      .eq("id_refugio", id.getValue())
       .maybeSingle();
 
     if (error) {
@@ -70,12 +110,17 @@ export class SupabaseRefugioRepository implements RefugioRepository {
 
   async findByName(name: RefugioName): Promise<Refugio | null> {
     const { data, error } = await this.supabase
-      .from(SupabaseRefugioRepository.TABLE)
-      .select("*")
-      .ilike(
-        SupabaseRefugioRepository.COLUMNS.NAME,
-        name.getValue()
-      )
+      .from("refugio_profile")
+      .select(`
+        *,
+        comuna:comuna (
+          nombre,
+          region:region (
+            nombre
+          )
+        )
+      `)
+      .ilike("nombre", name.getValue())
       .maybeSingle();
 
     if (error) {
@@ -89,12 +134,17 @@ export class SupabaseRefugioRepository implements RefugioRepository {
 
   async findByAuthId(authId: AuthId): Promise<Refugio | null> {
     const { data, error } = await this.supabase
-      .from(SupabaseRefugioRepository.TABLE)
-      .select("*")
-      .eq(
-        SupabaseRefugioRepository.COLUMNS.AUTH_ID,
-        authId.getValue()
-      )
+      .from("refugio_profile")
+      .select(`
+        *,
+        comuna:comuna (
+          nombre,
+          region:region (
+            nombre
+          )
+        )
+      `)
+      .eq("auth_id", authId.getValue())
       .maybeSingle();
 
     if (error) {
@@ -109,38 +159,42 @@ export class SupabaseRefugioRepository implements RefugioRepository {
   async update(refugio: Refugio): Promise<void> {
     const data = refugio.toPrimitives();
 
+    const idComuna = await this.findComunaId(
+      data.comuna ?? undefined,
+      data.region ?? undefined
+    );
+
     const { error } = await this.supabase
       .from(SupabaseRefugioRepository.TABLE)
       .update({
-        [SupabaseRefugioRepository.COLUMNS.NAME]: data.name,
-        [SupabaseRefugioRepository.COLUMNS.ADDRESS]: data.address,
-        [SupabaseRefugioRepository.COLUMNS.TELEPHONE]: data.telephone,
-        [SupabaseRefugioRepository.COLUMNS.DESCRIPTION]: data.description,
-        [SupabaseRefugioRepository.COLUMNS.IMG_URL]: data.img_url,
-        [SupabaseRefugioRepository.COLUMNS.COMUNA]: data.comuna,
-        [SupabaseRefugioRepository.COLUMNS.CODIGO_POSTAL]: data.codigoPostal,
-        [SupabaseRefugioRepository.COLUMNS.UPDATED_AT]: new Date()
+        nombre: data.name,
+        direccion: data.address,
+        telefono: data.telephone,
+        descripcion: data.description,
+        imagen_url: data.img_url,
+        id_comuna: idComuna,
+        codigo_postal: data.codigoPostal,
+        fecha_actualizacion: new Date()
       })
-      .eq(SupabaseRefugioRepository.COLUMNS.ID, data.id);
+      .eq("id_refugio", data.id);
 
     if (error) {
       throw new Error("Error updating refugio: " + error.message);
     }
-
-    
   }
 
   private mapToDomain(data: any): Refugio {
     return Refugio.fromPrimitives({
-      id: data[SupabaseRefugioRepository.COLUMNS.ID],
-      authId: data[SupabaseRefugioRepository.COLUMNS.AUTH_ID],
-      name: data[SupabaseRefugioRepository.COLUMNS.NAME],
-      address: data[SupabaseRefugioRepository.COLUMNS.ADDRESS],
-      telephone: data[SupabaseRefugioRepository.COLUMNS.TELEPHONE],
-      description: data[SupabaseRefugioRepository.COLUMNS.DESCRIPTION],
-      img_url: data[SupabaseRefugioRepository.COLUMNS.IMG_URL],
-      comuna: data[SupabaseRefugioRepository.COLUMNS.COMUNA],
-      codigoPostal: data[SupabaseRefugioRepository.COLUMNS.CODIGO_POSTAL],
+      id: data.id_refugio,
+      authId: data.auth_id,
+      name: data.nombre,
+      address: data.direccion,
+      telephone: data.telefono,
+      description: data.descripcion,
+      img_url: data.imagen_url,
+      comuna: data.comuna?.nombre,
+      region: data.comuna?.region?.nombre,
+      codigoPostal: data.codigo_postal,
     });
   }
 }

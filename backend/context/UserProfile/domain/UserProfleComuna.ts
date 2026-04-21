@@ -12,7 +12,7 @@ export class UserProfileComuna {
         UserProfileComuna.validate(value);
     }
 
-    static validate(comuna: UserProfileComunaType): void {
+    static validate(comuna: string): void {
         parseSchema(UserProfileComunaSchema, comuna);
     }
 

@@ -1,5 +1,5 @@
-
-import { RefugioType, ResponseType } from "../Shared/type";
+"use server";
+import { RefugioType, ResponseType, UserProfileType } from "../Shared/type";
 import {z} from "zod";
 import { parseSchema } from "../Shared/parseSchema";
 import { UpdateRefugioProfileUseCase } from "@/backend/context/Refugio/app/UpdateRefugioProfile";
@@ -25,32 +25,35 @@ const RefufioProfileSchema = z.object({
   comuna: z
   .string()
   .max(100, "La comuna debe tener máximo 100 caracteres").optional(),
+  region: z
+  .string()
+  .max(100, "La región debe tener máximo 100 caracteres").optional(),
   codigoPostal: z
   .string()
   .max(20, "El código postal debe tener máximo 20 caracteres").optional(),
 });
 
+export default async function UpdateRefugioProfileAction(
+  prevState: ResponseType<Omit<RefugioType, "id">>,
+  formData: FormData
+): Promise<ResponseType<Omit<RefugioType, "id">>> {
 
-export default async function UpdateRefugioProfile(
-    name: string,
-    address?: string,
-    telephone?: string,
-    description?: string,
-    comuna?: string,
-    codigoPostal?: string
-):Promise<ResponseType<Omit<RefugioType, "id">>> {
+    const data = {
+       name: formData.get("name")?.toString() ?? "",
+region: formData.get("region")?.toString() ?? "",
+comuna: formData.get("comuna")?.toString() ?? "",
+address: formData.get("address")?.toString() ?? "",
+telephone: formData.get("telephone")?.toString() ?? "",
+description: formData.get("description")?.toString() ?? "",
+        codigoPostal: formData.get("codigoPostal")?.toString() ?? "",
+    }
 
     try{
     const parsedData = await parseSchema(
         RefufioProfileSchema, 
-        { 
-        name, 
-        address, 
-        telephone, 
-        description, 
-        comuna, 
-        codigoPostal 
-    });
+        data
+    );
+
     const dbClient = SupabaseService.getInstance().getClient();
     const refugioRepository = new SupabaseRefugioRepository(dbClient);
     const useCase = new UpdateRefugioProfileUseCase(refugioRepository);
@@ -70,7 +73,9 @@ export default async function UpdateRefugioProfile(
      parsedData.address,
      parsedData.telephone,
      parsedData.description,
+        undefined,
      parsedData.comuna,
+     parsedData.region,
      parsedData.codigoPostal
     );
     

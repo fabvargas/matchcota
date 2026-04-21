@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function FormLogin() {
-    const { state, isPending, handleSubmit } = useSubmitForm(LogInAction, { error: false, message: "" });
+    const { state, isPending, handleSubmit } = useSubmitForm(LogInAction, { error: false, message: "" }, "/perfil");
     const [showPassword, setShowPassword] = useState(false);
 
 useEffect(() => {

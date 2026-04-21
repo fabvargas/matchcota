@@ -87,7 +87,8 @@ export class SupabaseAuthRepository implements AuthRepository {
   }
 
   async findById(id: AuthId): Promise<Auth | null> {
-    const { data, error } = await this.supabase
+
+      const { data, error } = await this.supabase
       .from(SupabaseAuthRepository.TABLE)
       .select("*")
       .eq(SupabaseAuthRepository.COLUMNS.ID, id.getValue())
@@ -100,6 +101,8 @@ export class SupabaseAuthRepository implements AuthRepository {
     if (!data) return null;
 
     return this.mapToDomain(data);
+ 
+    
   }
 
 private mapToDomain(data: any): Auth {
@@ -158,7 +161,16 @@ private mapToDomain(data: any): Auth {
         }
       }
 
-     
+      async deleteById(id: AuthId): Promise<void> {
+        const { error } = await this.supabase
+          .from(SupabaseAuthRepository.TABLE)
+          .delete()
+          .eq(SupabaseAuthRepository.COLUMNS.ID, id.getValue());
+
+        if (error) {
+          throw new Error("Error deleting auth by id: " + error.message);
+        }
+      }
 
   private mapProviderFromDB(id: number): string {
     const map: Record<number, string> = {

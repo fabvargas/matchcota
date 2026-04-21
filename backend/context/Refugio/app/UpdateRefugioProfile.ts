@@ -3,6 +3,7 @@ import { AuthId } from "../../Auth/domain/AuthId";
 import { RefugioRepository } from "../domain/RefugioRepository";
 import { Refugio } from "../domain/Refugio";
 import { ComunaType } from "../../Shared/ComunaType";
+import { RegionType } from "../../Shared/RegionType";
 
 
  type RefugioProfileType = {
@@ -14,6 +15,7 @@ import { ComunaType } from "../../Shared/ComunaType";
     telephone: string | undefined,
     description: string | undefined,
     comuna: ComunaType | undefined,
+    region: string | undefined,
     codigoPostal: string | undefined
 }
 
@@ -34,6 +36,7 @@ export class UpdateRefugioProfileUseCase {
         description?: string,
         imagen_url?: string,
         comuna?: string,
+        region?: string,
         codigoPostal?: string
     ): Promise<RefugioProfileType> {
 
@@ -53,7 +56,8 @@ export class UpdateRefugioProfileUseCase {
             description: description ?? null,
             img_url: imagen_url ?? null,
             comuna: comuna as ComunaType ?? null,
-            codigoPostal: codigoPostal ?? null
+            codigoPostal: codigoPostal ?? null,
+            region: region as RegionType ?? null
         });
 
         const nameExisting = await this.refugioRepository.findByName(newRefugio.getName());
@@ -77,7 +81,9 @@ export class UpdateRefugioProfileUseCase {
             description: refugioData.description ?? undefined,
             img_url: refugioData.img_url ?? undefined,
             codigoPostal: refugioData.codigoPostal ?? undefined,
-            comuna: refugioData.comuna ?? undefined
+            comuna: refugioData.comuna ?? undefined,
+            region: refugioData.region ?? undefined
+
         };
 
     }

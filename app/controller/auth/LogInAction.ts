@@ -9,6 +9,7 @@ import { signIn } from "@/auth";
 import { SupabaseService } from "@/backend/infra/supabase/server";
 import { SupabaseAuthRepository } from "@/backend/context/Auth/infra/SupabaseAuthRepository";
 import { VerifyCredentialUseCase } from "@/backend/context/Auth/app/VerifyCredentialUseCase";
+import { redirect } from "next/navigation";
 
 
 
@@ -45,6 +46,8 @@ export default async function LogInAction(
             password: parsedData.password,
             redirect: false,
         })
+
+       
 
         return {
             error: false,

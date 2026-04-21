@@ -24,11 +24,14 @@ export default function RootLayout({
       lang="en"
       className={`${inter.className} h-full antialiased`}
     >
-      <body className="min-h-screen flex flex-col bg-[#FFF6F0]">
+      <body >
+        <div className="min-h-screen flex flex-col bg-[#FFF6F0] " >
+
         <Toaster position="top-center" richColors />
         <LayoutWrapper>
           {children}
         </LayoutWrapper>
+        </div>
       </body>
     </html>
   );

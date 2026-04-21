@@ -4,7 +4,7 @@ export type ResponseType<T> = {
   data?: T;
 };
 
-type UserProfileType = {
+export type UserProfileType = {
   id: string;
   authId: string;
   name: string;
@@ -13,6 +13,7 @@ type UserProfileType = {
   telephone?: string;
   description?: string;
   comuna?: ComunaType;
+  region?: string;
 };
 
 export type RefugioType = {
@@ -24,5 +25,6 @@ export type RefugioType = {
   telephone: string | undefined,
   description: string | undefined,
   comuna: ComunaType | undefined,
+  region: string | undefined,
   codigoPostal: string | undefined
 }

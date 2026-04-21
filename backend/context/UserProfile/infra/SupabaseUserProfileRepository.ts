@@ -6,38 +6,61 @@ import { AuthId } from "../../Auth/domain/AuthId";
 
 export class SupabaseUserProfileRepository implements UserProfileRepository {
 
-  // ✅ tabla
   private static readonly TABLE = "usuario_profile";
 
-  // ✅ columnas
-  private static readonly COLUMNS = {
-    ID: "id_usuario",
-    AUTH_ID: "id_usuario", // 👈 mismo campo (FK a auth)
-    NAME: "nombre",
-    TELEPHONE: "telefono",
-    ADDRESS: "direccion",
-    IMG_URL: "imagen_url",
-    DESCRIPTION: "descripcion",
-    UPDATED_AT: "fecha_actualizacion",
-    COMUNA: "id_comuna"
-  };
-
   constructor(private supabase: SupabaseClient) {}
+
+  // 🔥 helper interno
+  private async findComunaId(
+    comunaNombre?: string,
+    regionNombre?: string
+  ): Promise<number | undefined> {
+
+    if (!comunaNombre) return undefined;
+
+    let query = this.supabase
+      .from("comuna")
+      .select(`
+        id_comuna,
+        region:region (
+          nombre
+        )
+      `)
+      .eq("nombre", comunaNombre);
+
+    if (regionNombre) {
+      query = query.eq("region.nombre", regionNombre);
+    }
+
+    const { data, error } = await query.single();
+
+    if (error) {
+      if (error.code === "PGRST116") return undefined;
+      throw new Error("Error finding comuna: " + error.message);
+    }
+
+    return data.id_comuna;
+  }
 
   async save(userProfile: UserProfile): Promise<void> {
     const data = userProfile.toPrimitives();
 
+    const idComuna = await this.findComunaId(
+      data.comuna ?? undefined,
+      data.region ?? undefined
+    );
+
     const { error } = await this.supabase
       .from(SupabaseUserProfileRepository.TABLE)
       .upsert({
-        [SupabaseUserProfileRepository.COLUMNS.ID]: data.authId, // 👈 clave
-        [SupabaseUserProfileRepository.COLUMNS.NAME]: data.name,
-        [SupabaseUserProfileRepository.COLUMNS.TELEPHONE]: data.telephone,
-        [SupabaseUserProfileRepository.COLUMNS.ADDRESS]: data.address,
-        [SupabaseUserProfileRepository.COLUMNS.COMUNA]: data.comuna,
-        [SupabaseUserProfileRepository.COLUMNS.IMG_URL]: data.img_url,
-        [SupabaseUserProfileRepository.COLUMNS.DESCRIPTION]: data.description,
-        [SupabaseUserProfileRepository.COLUMNS.UPDATED_AT]: data.updateAt
+        id_usuario: data.authId,
+        nombre: data.name,
+        telefono: data.telephone,
+        direccion: data.address,
+        id_comuna: idComuna,
+        imagen_url: data.img_url,
+        descripcion: data.description,
+        fecha_actualizacion: data.updateAt
       });
 
     if (error) {
@@ -47,9 +70,17 @@ export class SupabaseUserProfileRepository implements UserProfileRepository {
 
   async findById(id: string): Promise<UserProfile | null> {
     const { data, error } = await this.supabase
-      .from(SupabaseUserProfileRepository.TABLE)
-      .select("*")
-      .eq(SupabaseUserProfileRepository.COLUMNS.ID, id)
+      .from("usuario_profile")
+      .select(`
+        *,
+        comuna:comuna (
+          nombre,
+          region:region (
+            nombre
+          )
+        )
+      `)
+      .eq("id_usuario", id)
       .single();
 
     if (error) {
@@ -57,17 +88,24 @@ export class SupabaseUserProfileRepository implements UserProfileRepository {
       throw new Error("Error finding by id: " + error.message);
     }
 
-    return this.mapToDomain(data);
+    const result =  this.mapToDomain(data);
+  
+    return result;
   }
 
   async findByName(name: UserProfileName): Promise<UserProfile | null> {
     const { data, error } = await this.supabase
-      .from(SupabaseUserProfileRepository.TABLE)
-      .select("*")
-      .ilike(
-        SupabaseUserProfileRepository.COLUMNS.NAME,
-        name.getValue()
-      )
+      .from("usuario_profile")
+      .select(`
+        *,
+        comuna:comuna (
+          nombre,
+          region:region (
+            nombre
+          )
+        )
+      `)
+      .ilike("nombre", name.getValue())
       .single();
 
     if (error) {
@@ -80,9 +118,17 @@ export class SupabaseUserProfileRepository implements UserProfileRepository {
 
   async findByAuthId(authId: AuthId): Promise<UserProfile | null> {
     const { data, error } = await this.supabase
-      .from(SupabaseUserProfileRepository.TABLE)
-      .select("*")
-      .eq(SupabaseUserProfileRepository.COLUMNS.AUTH_ID, authId.getValue())
+      .from("usuario_profile")
+      .select(`
+        *,
+        comuna:comuna (
+          nombre,
+          region:region (
+            nombre
+          )
+        )
+      `)
+      .eq("id_usuario", authId.getValue())
       .single();
 
     if (error) {
@@ -90,41 +136,60 @@ export class SupabaseUserProfileRepository implements UserProfileRepository {
       throw new Error("Error finding by auth id: " + error.message);
     }
 
-    return this.mapToDomain(data);
+    const result = this.mapToDomain(data);
+  
+    return result;
   }
 
   async update(userProfile: UserProfile): Promise<void> {
     const data = userProfile.toPrimitives();
 
+    const idComuna = await this.findComunaId(
+      data.comuna ?? undefined,
+      data.region ?? undefined
+    );
+
     const { error } = await this.supabase
       .from(SupabaseUserProfileRepository.TABLE)
       .update({
-        [SupabaseUserProfileRepository.COLUMNS.NAME]: data.name,
-        [SupabaseUserProfileRepository.COLUMNS.TELEPHONE]: data.telephone,
-        [SupabaseUserProfileRepository.COLUMNS.ADDRESS]: data.address,
-        [SupabaseUserProfileRepository.COLUMNS.COMUNA]: data.comuna,
-        [SupabaseUserProfileRepository.COLUMNS.IMG_URL]: data.img_url,
-        [SupabaseUserProfileRepository.COLUMNS.DESCRIPTION]: data.description,
-        [SupabaseUserProfileRepository.COLUMNS.UPDATED_AT]: data.updateAt
+        nombre: data.name,
+        telefono: data.telephone,
+        direccion: data.address,
+        id_comuna: idComuna,
+        imagen_url: data.img_url,
+        descripcion: data.description,
+        fecha_actualizacion: data.updateAt
       })
-      .eq(SupabaseUserProfileRepository.COLUMNS.ID, data.authId);
+      .eq("id_usuario", data.authId);
 
     if (error) {
       throw new Error("Error updating user profile: " + error.message);
-    } 
+    }
+  }
+
+  async deleteByAuthId(authId: string): Promise<void> {
+    const { error } = await this.supabase
+      .from(SupabaseUserProfileRepository.TABLE)
+      .delete()
+      .eq("id_usuario", authId);
+
+    if (error) {
+      throw new Error("Error deleting user profile: " + error.message);
+    }
   }
 
   private mapToDomain(data: any): UserProfile {
     return UserProfile.fromPrimitives({
-      id: data[SupabaseUserProfileRepository.COLUMNS.ID],
-      authId: data[SupabaseUserProfileRepository.COLUMNS.AUTH_ID],
-      name: data[SupabaseUserProfileRepository.COLUMNS.NAME],
-      telephone: data[SupabaseUserProfileRepository.COLUMNS.TELEPHONE],
-      address: data[SupabaseUserProfileRepository.COLUMNS.ADDRESS],
-      comuna: data[SupabaseUserProfileRepository.COLUMNS.COMUNA],
-      img_url: data[SupabaseUserProfileRepository.COLUMNS.IMG_URL],
-      description: data[SupabaseUserProfileRepository.COLUMNS.DESCRIPTION],
-      updateAt: data[SupabaseUserProfileRepository.COLUMNS.UPDATED_AT]
+      id: data.id_usuario,
+      authId: data.id_usuario,
+      name: data.nombre,
+      telephone: data.telefono,
+      address: data.direccion,
+      comuna: data.comuna?.nombre,
+      img_url: data.imagen_url,
+      description: data.descripcion,
+      updateAt:new Date(data.fecha_actualizacion),
+      region: data.comuna?.region?.nombre,
     });
   }
 }

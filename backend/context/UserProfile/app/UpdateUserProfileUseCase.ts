@@ -1,9 +1,11 @@
+
 import { ValidateDomainError } from "@/backend/error/ValidateDomainError";
 import { AuthId } from "../../Auth/domain/AuthId";
 
 import { ComunaType } from "../../Shared/ComunaType";
 import { UserProfileRepository } from "../domain/UserProfileRepository";
 import { UserProfile } from "../domain/UserProfile";
+import { RegionType } from "../../Shared/RegionType";
 
 type UserProfileType = {
   id: string;
@@ -14,6 +16,7 @@ type UserProfileType = {
   telephone?: string;
   description?: string;
   comuna?: ComunaType;
+  region?: string;
 };
 
 export class UpdateUserProfileUseCase {
@@ -29,6 +32,7 @@ export class UpdateUserProfileUseCase {
     telephone?: string,
     comuna?: string,
     description?: string,
+    region?: string
   ): Promise<UserProfileType> {
 
     // 🔥 1. Value Object
@@ -49,7 +53,9 @@ export class UpdateUserProfileUseCase {
       telephone: telephone ?? null,
       description: description ?? null,
       comuna: (comuna as ComunaType) ?? null,
+      region: (region as RegionType) ?? null,
     img_url: img_url ?? null,
+      
     });
 
     // 🔥 4. (Opcional) Validación de nombre único
@@ -59,6 +65,7 @@ export class UpdateUserProfileUseCase {
       throw new ValidateDomainError("El nombre ya está en uso");
     }
 
+    newUser.updateTimestamp();
     // 🔥 5. Persistir
     await this.userProfile.update(newUser);
 
@@ -72,6 +79,7 @@ export class UpdateUserProfileUseCase {
       description: userData.description ?? undefined,
       img_url: userData.img_url ?? undefined,
       comuna: userData.comuna ?? undefined,
+      region: userData.region ?? undefined,
     };
   }
 }

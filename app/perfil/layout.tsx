@@ -11,12 +11,13 @@ export default function PerfilLayout({
   children: React.ReactNode;
 }) {
   return (
+    
     <SidebarProvider>
 
       <AppSidebar />
 
       <SidebarInset>
-        <div className="p-6">
+        <div className="p-6 ">
           {children}
         </div>
       </SidebarInset>
