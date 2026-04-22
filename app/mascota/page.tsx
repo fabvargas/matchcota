@@ -1,7 +1,16 @@
+import Listamascota from "@/frontend/components/listamascota";
 export default function Mascota() {
     return (
-        <div className="min-h-screen flex items-center justify-center">
-            <h1 className="text-3xl font-bold">Página de mascotas</h1>
+        <div className="max-w-7xl mx-auto px-6 py-10">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4 text-[#4CAF7A]">
+                Catálogo de Mascotas
+            </h1>
+            <p className="text-gray-600 text-lg mb-6">
+                Descubre a tu compañero perfecto esperando un hogar
+            </p>
+            <Listamascota />
         </div>
+
+        
     );
 }
