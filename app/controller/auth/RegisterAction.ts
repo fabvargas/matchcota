@@ -56,7 +56,7 @@ export async function RegisterAction(
 
     try{
         const parsedData = await parseSchema(RegisterSchema, data);
-        const dbClient = SupabaseService.getInstance().getClient();
+        const dbClient = SupabaseService.getInstance().getAdminClient();
         const authRepository = new SupabaseAuthRepository(dbClient);
         const userProfileRepository = new SupabaseUserProfileRepository(dbClient);
         const refugioRepository = new SupabaseRefugioRepository(dbClient);

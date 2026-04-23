@@ -131,6 +131,10 @@ export class Auth{
         return this.role;
     }
 
+    isTwoFactorEnabled(): boolean {
+        return this.two_factor.isTwoFactorEnabled();
+    }
+
     comparePassword(plainPassword: AuthPassword): Promise<boolean> {
         return AuthPasswordHashed.compare(plainPassword, this.passwordHashed);
     }

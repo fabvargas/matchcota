@@ -4,6 +4,13 @@ export type ResponseType<T> = {
   data?: T;
 };
 
+/** Respuesta extendida del login (2FA por correo). */
+export type LoginActionData = {
+  requiresOtp?: boolean;
+  loginTicket?: string;
+  email?: string;
+};
+
 export type UserProfileType = {
   id: string;
   authId: string;

@@ -29,7 +29,6 @@ export class VerifyCredentialUseCase {
     const isValid = await auth.comparePassword(
       new AuthPassword(password)
     );
-    console.log("contraseña valida", isValid)
 
     if (!isValid) {
       throw new ValidateDomainError("Credenciales inválidas");

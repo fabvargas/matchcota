@@ -20,7 +20,7 @@ export default async function GetProfile(){
       };
     }
 
-    const dbClient = SupabaseService.getInstance().getClient();
+    const dbClient = SupabaseService.getInstance().getAdminClient();
 
     const authRepository = new SupabaseAuthRepository(dbClient);
     const userProfileRepository = new SupabaseUserProfileRepository(dbClient);
