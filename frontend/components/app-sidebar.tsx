@@ -56,6 +56,12 @@ export function AppSidebar() {
       name: "Favoritos",
       href: "/perfil/favoritos",
       icon: Bookmark,
+    },
+
+    {
+        name: "Gestionar mascotas",
+        href: "/perfil/gestionarmascota",
+        icon: PawPrint,
     }
 
   ];

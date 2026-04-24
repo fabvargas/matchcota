@@ -28,7 +28,11 @@ function DialogPortal({
 function DialogClose({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Close>) {
+<<<<<<< HEAD
   return <DialogPrimitive.Close data-slot="dialog-close"  {...props} />
+=======
+  return <DialogPrimitive.Close data-slot="dialog-close" {...props} />
+>>>>>>> rama_Santiago
 }
 
 function DialogOverlay({

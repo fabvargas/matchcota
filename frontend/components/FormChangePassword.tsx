@@ -13,7 +13,7 @@ export default function FormChangePassword() {
         error: false,
         message: ""
     })
-  
+
     const [showPassword, setShowPassword] = useState(false);
         useEffect(() => {
         if (state?.error) {

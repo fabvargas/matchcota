@@ -16,6 +16,7 @@ import { UserProfileType } from "@/frontend/type";
 
 
 
+
 export default function Profile({profile}: {profile: UserProfileType}) {
   const [editMode, setEditMode] = useState(false);
   const [avatar, setAvatar] = useState("/images/avatars/avatar1.png");
@@ -34,16 +35,19 @@ export default function Profile({profile}: {profile: UserProfileType}) {
     }
 
     
+
   return (
     <div className="space-y-6 mx-auto w-full  max-w-5xl ">
 
      {/* HEADER */}
       <div className="rounded-xl shadow p-6 flex flex-col md:flex-row items-center gap-6 bg-white">
-        
+
+
         <Avatar className="w-24 h-24">
           <AvatarImage src={avatar} />
           <AvatarFallback>SG</AvatarFallback>
         </Avatar>
+
 
         <div className="flex-1 text-center md:text-left">
           <h1 className="text-2xl font-bold">{data.name}</h1>
@@ -51,7 +55,9 @@ export default function Profile({profile}: {profile: UserProfileType}) {
 
           <div className="flex gap-2 justify-center md:justify-start mt-2">
             <span className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full">
+
               {data.role}
+
             </span>
           </div>
         </div>
@@ -83,6 +89,7 @@ export default function Profile({profile}: {profile: UserProfileType}) {
         </Dialog>
 
       </div>
+
       
       {/* STATS */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -124,6 +131,7 @@ export default function Profile({profile}: {profile: UserProfileType}) {
             <input
               className="w-full mt-1 p-2 border rounded-lg"
               defaultValue={data.telephone}
+
               readOnly
             />
           </div>
@@ -132,7 +140,9 @@ export default function Profile({profile}: {profile: UserProfileType}) {
             <label className="text-sm text-gray-500">Región</label>
             <input
               className="w-full mt-1 p-2 border rounded-lg"
+
               defaultValue={data.region}
+
               readOnly
             />
           </div>
@@ -141,7 +151,9 @@ export default function Profile({profile}: {profile: UserProfileType}) {
             <label className="text-sm text-gray-500">Comuna</label>
             <input
               className="w-full mt-1 p-2 border rounded-lg"
+
               defaultValue={data.comuna}
+
               readOnly
             />
           </div>
@@ -150,7 +162,9 @@ export default function Profile({profile}: {profile: UserProfileType}) {
             <label className="text-sm text-gray-500">Dirección</label>
             <input
               className="w-full mt-1 p-2 border rounded-lg"
+
               defaultValue={data.address}
+
               readOnly
             />
           </div>
@@ -164,6 +178,7 @@ export default function Profile({profile}: {profile: UserProfileType}) {
           <Textarea className="w-full mt-1 p-2 border rounded-lg" 
             id="descripcion" 
             defaultValue={data.description}
+
             readOnly />
         </Field>
         </div>
