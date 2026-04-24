@@ -6,9 +6,11 @@ import { Card, CardFooter, CardHeader, CardTitle, CardAction, CardDescription } 
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { PawPrint, Heart, MapPinned, Venus, Mars } from "lucide-react";
+import EditarMascota from "./EditarMascota";
 
 export default function Cardmascota() {
     const router = useRouter();
+    const isRefugio = true; // Simulación de autenticación/refugio
     
 
     // 🔹 Datos de mascotas
@@ -119,14 +121,19 @@ export default function Cardmascota() {
                         <CardDescription>Carácter: {m.caracter}</CardDescription>
                     </CardHeader>
 
-                    <CardFooter>
-                        <Button
-                            variant="customorange"
-                            className="w-full"
-                            onClick={() => router.push(`/mascota/${m.id}`)}
-                        >
-                            Ver más
-                        </Button>
+                    <CardFooter className="flex flex-col gap-2">
+
+                    {/* VER MÁS */}
+                    <Button
+                        variant="customorange"
+                        className="w-full"
+                        onClick={() => router.push(`/mascota/${m.id}`)}
+                    >
+                        Ver más
+                    </Button>
+
+                    {/* EDITAR */}
+                    {isRefugio && <EditarMascota />}
                     </CardFooter>
 
                 </Card>
