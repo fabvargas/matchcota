@@ -6,6 +6,8 @@ import { AuthId } from "../../Auth/domain/AuthId";
 export interface RefugioRepository {
   save(refugio: Refugio): Promise<void>;
 
+  findById(id: RefugioId): Promise<Refugio | null>;
+
   findByAuthId(authId: AuthId): Promise<Refugio | null>;
 
   findByName(name: RefugioName): Promise<Refugio | null>;

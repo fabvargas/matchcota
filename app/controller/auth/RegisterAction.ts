@@ -33,7 +33,7 @@ const RegisterSchema = z.object({
   .min(1, "El nombre es obligatorio")
   .max(255, "El nombre debe tener máximo 255 caracteres"),
   rol:
-  z.enum(["Adoptante", "Fundacion"], {message: "Rol inválido"})
+  z.enum(["Adoptante", "Refugio"], {message: "Rol inválido"})
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Las contraseñas no coinciden",
   path: ["confirmPassword"],
@@ -66,7 +66,7 @@ export async function RegisterAction(
               authRepository,
               userProfileRepository
             ),
-        Fundacion: new RegisterRefugioUseCase(
+        Refugio: new RegisterRefugioUseCase(
             authRepository,
             refugioRepository
         ),

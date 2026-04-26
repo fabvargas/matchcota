@@ -21,6 +21,8 @@ export default function CustomSelect({
   placeholder = "Selecciona una opción",
   disabled = false,
   name,
+  required = false,
+  defaultValue,
 }: {
   items: Option[];
   value?: string;
@@ -28,9 +30,11 @@ export default function CustomSelect({
   placeholder?: string;
   name?: string;
   disabled?: boolean;
+  required?: boolean;
+  defaultValue?: string;
 }) {
   return (
-    <Select value={value} onValueChange={onChange} name={name}>
+    <Select value={value} onValueChange={onChange} name={name} required={required} defaultValue={defaultValue}>
       <SelectTrigger
         disabled={disabled}
         className="w-full mt-1 px-3 py-2 border rounded-lg"

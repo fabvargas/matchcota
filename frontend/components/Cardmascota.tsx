@@ -7,53 +7,35 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { PawPrint, Heart, MapPinned, Venus, Mars } from "lucide-react";
 import EditarMascota from "./EditarMascota";
+import { useSession } from "next-auth/react";
 
-export default function Cardmascota() {
+export type CardMascotaProps = {
+    id: string;
+    nombre: string;
+    raza: string;
+    edad: number;
+    tipo: string;
+    sexo: string;
+    comuna: string;
+    caracter: string;
+    img: string;
+    size: string;
+    nivel_energia: number;
+    health_description: string;
+    descripcion: string;
+}
+
+export default function Cardmascota(m: CardMascotaProps) {
     const router = useRouter();
-    const isRefugio = true; // Simulación de autenticación/refugio
+    const { data: session } = useSession(); 
     
 
-    // 🔹 Datos de mascotas
-    const mascotas = [
-        {
-            id: 1,
-            nombre: "Zeus",
-            raza: "Labrador Retriever",
-            edad: 3,
-            tipo: "Perro",
-            sexo: "Macho",
-            comuna: "Santiago Centro",
-            caracter: "Amigable",
-            img: "/images/Labrador.jpg",
-        },
-        {
-            id: 2,
-            nombre: "Valki",
-            raza: "German Shepherd",
-            edad: 4,
-            tipo: "Perro",
-            sexo: "Macho",
-            comuna: "Valparaíso",
-            caracter: "Protector",
-            img: "/images/Valki.jpg",
-        },
-        {
-            id: 3,
-            nombre: "Pelusa",
-            raza: "Siamés Mix",
-            edad: 2,
-            tipo: "Gato",
-            sexo: "Hembra",
-            comuna: "Providencia",
-            caracter: "Curiosa",
-            img: "/images/pelusa.jpg",
-        },
-    ];
+
 
     // 🔹 Estado de favoritos
-    const [favorites, setFavorites] = useState<Record<number, boolean>>({});
+    const [favorites, setFavorites] = useState<Record<string, boolean>>({});
 
-    const toggleFav = (id: number) => {
+    const toggleFav = (id: string) => {
         setFavorites((prev) => ({
             ...prev,
             [id]: !prev[id],
@@ -61,10 +43,10 @@ export default function Cardmascota() {
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+        
 
-            {mascotas.map((m) => (
-                <Card key={m.id} className="relative mx-auto w-full max-w-sm pt-0">
+    
+                <Card  className="relative mx-auto w-full max-w-sm pt-0">
 
                     {/*Btn favorito */}
                     <Button
@@ -133,12 +115,12 @@ export default function Cardmascota() {
                     </Button>
 
                     {/* EDITAR */}
-                    {isRefugio && <EditarMascota />}
+                    {session?.user?.role === "refugio" && <EditarMascota mascota={m} />}
                     </CardFooter>
 
                 </Card>
-            ))}
+         
 
-        </div>
+       
     );
 }

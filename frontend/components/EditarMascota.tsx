@@ -12,9 +12,15 @@ import {
 } from "@/frontend/components/ui/dialog";
 
 import FormMascota from "./FormMascota";
+import { UpdatePetAction } from "@/app/controller/pet/UpdatePetAction";
+import { useSubmitForm } from "../hooks/useSubmitForm";
+import { CardMascotaProps } from "./Cardmascota";
 
-export default function EditarMascota() {
+export default function EditarMascota(
+  { mascota }: { mascota: CardMascotaProps }
+  ) {
   const [open, setOpen] = useState(false);
+   const {state, handleSubmit, isPending} = useSubmitForm(UpdatePetAction, {error:false,message:""});
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -52,7 +58,13 @@ export default function EditarMascota() {
 </DialogHeader>
 
         {/* FORM REUTILIZADO */}
-        <FormMascota />
+        <FormMascota  
+        handleSubmit={handleSubmit}
+        isPending={isPending}
+        state={state}
+        mascota={mascota}
+       
+        />
 
       </DialogContent>
 

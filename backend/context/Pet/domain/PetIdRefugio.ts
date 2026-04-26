@@ -10,6 +10,7 @@ export class PetIdRefugio {
     }
 
     static validate(value: string): void {
+      
        UUIDSchema.parse(value);
         
     }

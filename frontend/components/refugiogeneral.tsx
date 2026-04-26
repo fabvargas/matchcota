@@ -5,8 +5,11 @@ import { PawPrint, Inbox, CheckCircle, Eye } from "lucide-react";
 import { Button } from "./ui/button";
 import PublicarMascota from "./FormMascota";
 import FormMascota from "./FormMascota";
+import { SavePetAction } from "@/app/controller/pet/SavePetAction";
+import { useSubmitForm } from "../hooks/useSubmitForm";
 
 export default function General() {
+   const {state, handleSubmit, isPending} = useSubmitForm(SavePetAction, {error:false,message:""});
   const stats = [
     {
       title: "Mascotas publicadas",
@@ -85,7 +88,12 @@ const solicitudes = [
 
       {/* Publicar Mascota */}
       <div className="col-span-1 sm:col-span-2 lg:col-span-4">
-        <FormMascota/>
+        <FormMascota
+          handleSubmit={handleSubmit}
+          isPending={isPending}
+          state={state}
+         
+        />
       </div>
         
        {/* Actividad reciente */}

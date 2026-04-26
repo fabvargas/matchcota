@@ -7,7 +7,7 @@ export type PetAgeType = z.infer<typeof PetAgeSchema>;
 
 export class PetAge{
     constructor(
-        private readonly value: PetAgeType,
+         readonly value: PetAgeType,
     ){
 
         PetAge.validate(value);

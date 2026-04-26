@@ -6,8 +6,15 @@ import Tab from "@/frontend/components/Tab";
 import General from "@/frontend/components/refugiogeneral";
 import MisMascotas from "@/frontend/components/refugiomascota";
 import Solicitudes from "@/frontend/components/refugiosolicitudes";
+import { CardMascotaProps } from "./Cardmascota";
 
-export default function PanelRefugio() {
+
+type PanelRefugioProps = {
+  mascotas: CardMascotaProps[];
+};
+  
+
+export default function PanelRefugio({ mascotas }: PanelRefugioProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -58,7 +65,7 @@ export default function PanelRefugio() {
 
       <div className="min-h-[300px]">
         {activeTab === "general" && <General />}
-        {activeTab === "mascotas" && <MisMascotas />}
+        {activeTab === "mascotas" && <MisMascotas mascotas={mascotas} />}
         {activeTab === "solicitudes" && <Solicitudes />}
       </div>
 

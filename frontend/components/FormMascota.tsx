@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { SyntheticEvent, useState } from "react";
 import { Card, CardContent } from "@/frontend/components/ui/card";
 import { Button } from "./ui/button";
 import { Input } from "@/frontend/components/ui/input";
@@ -9,20 +9,36 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/frontend/components/ui/field";
-import { Select, SelectItem, SelectContent, SelectValue, SelectTrigger} from "@/frontend/components/ui/select";
+import CustomSelect from "./CustomSelect";
+import { breedByType, caracterOptions, energyLevel, genreOptions, PetType, sizeOptions, typeMascota, } from "../lib/petOptions";
+import { comunaOptions } from "../lib/petOptions";
 
-export default function FormMascota() {
+import { CardMascotaProps } from "./Cardmascota";
+
+
+
+
+export default function FormMascota(
+ { handleSubmit, isPending, state , mascota }: { handleSubmit: (e: SyntheticEvent<HTMLFormElement>) => void; isPending: boolean; state: { error: boolean; message: string }; mascota?: CardMascotaProps  }
+) {
   const [previews, setPreviews] = useState<string[]>([]);
+const [type, setType] = useState<PetType | null>(mascota ? (mascota.tipo as PetType) : null);
+
 
   const handleImages = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const files = Array.from(e.target.files || []);
-
-  const urls = files.map((file) => URL.createObjectURL(file));
-  setPreviews(urls);
+    const files = Array.from(e.target.files || []);
+    const urls = files.map((file) => URL.createObjectURL(file));
+    setPreviews(urls);
   };
+  
+  
+  
+ 
     
   return (
     <div className="border border-orange-200 from-orange-50 to-white shadow-sm hover:shadow-md transition rounded-2xl">
+
+    
 
       <Card className="border border-orange-200 from-orange-50 to-white shadow-sm hover:shadow-md transition rounded-2xl">
 
@@ -38,112 +54,138 @@ export default function FormMascota() {
               Completa la información para registrar o editar una mascota en adopción.
             </p>
           </div>
-
+          <form onSubmit={handleSubmit} className="w-full">
           {/* FORM GRID */}
           <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             <Field>
               <FieldLabel>Nombre</FieldLabel>
               <Input
+                name="name"
                 id="nombre"
-                placeholder="Ingresa nombre de la mascota"                
+                placeholder="Ingresa nombre de la mascota"      
+                required          
+                 defaultValue={mascota?.nombre}
               />
             </Field>
 
-            <Field>
-              <FieldLabel>Raza</FieldLabel>
-                <Input
-                    id="raza"
-                    placeholder="Ingresa la raza de la mascota"
-                />
-            </Field>
+                   <Field>
+              <FieldLabel>Tipo</FieldLabel>
+           <CustomSelect
+          items={typeMascota.map(t => ({ value: t, label: t }))}
+          name="type"
+          onChange={(value) => setType(value as PetType)}
+          required
+          defaultValue={mascota?.tipo}
+
+        />
+
+
+    </Field>
+
+        
+         <Field>
+  <FieldLabel>Raza</FieldLabel>
+        <CustomSelect
+          items={
+            type
+              ? breedByType[type as PetType].map(breed => ({
+                  value: breed,
+                  label: breed
+                }))
+              : []
+          }
+          name="breed"
+          disabled={!type}
+          placeholder="Selecciona la raza de la mascota"
+          required
+          defaultValue={mascota?.raza}
+        />
+      </Field>
 
             <Field>
               <FieldLabel>Edad</FieldLabel>
               <Input
+                name="age"
                 id="edad"
                 placeholder="Ingresa la edad de la mascota"
+                required
+                defaultValue={mascota?.edad.toString()}
               />
             </Field>
 
-            <Field>
-              <FieldLabel>Tipo</FieldLabel>
-                <Select>
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Selecciona el tipo de mascota" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="perro">Perro</SelectItem>
-                        <SelectItem value="gato">Gato</SelectItem>
-                    </SelectContent>
-                </Select>
+     
 
-            </Field>
+           
 
-            <Field>
-              <FieldLabel>Sexo</FieldLabel>
-                <Select>
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Selecciona el sexo de la mascota" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="macho">Macho</SelectItem>
-                        <SelectItem value="hembra">Hembra</SelectItem>
-                    </SelectContent>
-                </Select>
-            </Field>
+          <Field>
+              <FieldLabel>Género</FieldLabel>
+            <CustomSelect
+              items={genreOptions.map(genre => ({
+                value: genre,
+                label: genre
+              }))}
+              name="genre"
+              placeholder="Selecciona el género de la mascota"
+              required
+              defaultValue={mascota?.sexo}
+            />
+          </Field>
 
             <Field>
               <FieldLabel>Comuna</FieldLabel>
-              <Input
-                id="comuna"
-                placeholder="Santiago"
-              />
+              <CustomSelect
+                  items={comunaOptions.map(comuna => ({ value: comuna, label: comuna }))}
+                  name="comuna"
+                  placeholder="Selecciona la comuna de la mascota"
+                  required
+                    defaultValue={mascota?.comuna}
+                />
             </Field>
 
             <Field>
               <FieldLabel>Carácter</FieldLabel>
-                <Select>
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Selecciona el carácter de la mascota" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="Amigable">Amigable</SelectItem>
-                        <SelectItem value="Juguetón">Juguetón</SelectItem>
-                        <SelectItem value="Tranquilo">Tranquilo</SelectItem>
-                        <SelectItem value="Curioso">Curioso</SelectItem>
-                        <SelectItem value="Tímido">Tímido</SelectItem>
-                        <SelectItem value="Activo">Activo</SelectItem>
-                        <SelectItem value="Cariñoso">Cariñoso</SelectItem>
-                        <SelectItem value="Protector">Protector</SelectItem>
-                        <SelectItem value="Sociable">Sociable</SelectItem>
-                    </SelectContent>
-                </Select>
+              <CustomSelect
+                  items={caracterOptions.map(caracter => ({ value: caracter, label: caracter }))}
+                  name="caracter"
+                  placeholder="Selecciona el carácter de la mascota"
+                  required
+                    defaultValue={mascota?.caracter}
+                />
             </Field>
 
             <Field>
               <FieldLabel>Energía (1-5)</FieldLabel>
-                <Select>
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Selecciona el nivel de energía de la mascota" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="1">1 - Muy baja</SelectItem>
-                        <SelectItem value="2">2 - Baja</SelectItem>
-                        <SelectItem value="3">3 - Moderada</SelectItem>
-                        <SelectItem value="4">4 - Alta</SelectItem>
-                        <SelectItem value="5">5 - Muy alta</SelectItem>
-                    </SelectContent>
-                </Select>
-
+                <CustomSelect
+                  items={energyLevel.map(level => ({ value: level, label: `${level}` }))}
+                  name="energy"
+                  placeholder="Selecciona el nivel de energía de la mascota"
+                  required
+                    defaultValue={mascota?.nivel_energia.toString()}
+                />
+                
             </Field>
+
+        <Field>
+          <FieldLabel>Tamaño</FieldLabel>
+           <CustomSelect
+            items={sizeOptions.map(size => ({ value: size, label: size }))}
+            name="size"
+            placeholder="Selecciona el tamaño de la mascota"
+            required
+            defaultValue={mascota?.size}
+          />
+        </Field>
             
             <Field>
               <FieldLabel>Salud</FieldLabel>
               <textarea
+                name="health_description"
                 id="salud"
                 placeholder="(Vacunas, enfermedades, desparasitaciones, esterilización etc.)"
                 className="w-full border rounded-md p-2 text-sm"
+                required
+                defaultValue={mascota?.health_description}
               />
             </Field>
 
@@ -153,11 +195,16 @@ export default function FormMascota() {
           <Field>
             <FieldLabel>Descripción</FieldLabel>
             <textarea
+              name="description"
               id="descripcion"
               placeholder="Descripción de la mascota"
               className="w-full border rounded-md p-2 text-sm"
+              required
+              defaultValue={mascota?.descripcion}
             />
           </Field>
+
+          
 
           {/* Fotos de la mascota */}
           <Field>
@@ -166,6 +213,7 @@ export default function FormMascota() {
             <div className="flex flex-col gap-4">
 
               <input
+                name="images"
                 type="file"
                 accept="image/*"
                 multiple
@@ -173,7 +221,8 @@ export default function FormMascota() {
                 className="hidden"
                 id="upload-images"
               />
-
+          
+              
               {/* BOTÓN UPLOAD */}
               <label
                 htmlFor="upload-images"
@@ -205,14 +254,27 @@ export default function FormMascota() {
             </div>
           </Field>
 
+          {
+            mascota && (
+              <input type="hidden" name="id" value={mascota.id} />
+            )
+          }
+
           {/* CTA */}
           <Button
+            type="submit"
             variant="customorange"
             className="w-full md:w-auto"
           >
-            Guardar
+            {isPending ? "Guardando..." : "Guardar Mascota"}
           </Button>
-
+          {state?.error && (
+            <p className="text-sm text-red-500 mt-2 text-center">{state.message || "Error al guardar la mascota"}</p>
+          )}
+          {state?.message && !state.error && (
+            <p className="text-sm text-green-500 mt-2 text-center">{state.message || "Mascota guardada exitosamente"}</p>
+          )}
+              </form>
         </CardContent>
       </Card>
 

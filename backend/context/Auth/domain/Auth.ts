@@ -131,6 +131,7 @@ export class Auth{
         return this.role;
     }
 
+
     comparePassword(plainPassword: AuthPassword): Promise<boolean> {
         return AuthPasswordHashed.compare(plainPassword, this.passwordHashed);
     }

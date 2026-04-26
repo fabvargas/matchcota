@@ -8,33 +8,41 @@ import { Card, CardContent } from "./ui/card";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function Fichamascota() {
-const [favorites, setFavorites] = useState<Record<number, boolean>>({});
+
+export default function Fichamascota(
+   {mascota}: {
+    mascota: {
+      id: string;
+      nombre: string;
+      raza: string;
+      edad: number;
+      tipo: string;
+      sexo: string;
+      comuna: string;
+      caracter: string;
+      descripcion: string;
+      salud: string;
+      refugio: string;
+      niveldeenergia: number;
+      estado: string;
+      images: string[];
+      refugioName: string;
+      refugioComunas: string;
+      refugioCodigoPostal: string;
+    };
+  }
+) {
+const [favorites, setFavorites] = useState<Record<string, boolean>>({});
   const router = useRouter();
 
-    const toggleFav = (id: number) => {
+    const toggleFav = (id: string) => {
     setFavorites((prev) => ({
         ...prev,
         [id]: !prev[id],
     }));
     };
     
-  const mascota = {
-    id: 1,
-    nombre: "Zeus",
-    raza: "Labrador Retriever",
-    edad: 3,
-    tipo: "Perro",
-    sexo: "Macho",
-    comuna: "Santiago Centro",
-    caracter: "Amigable",
-    niveldeenergia: 4,
-    descripcion:
-      "Zeus es un labrador retriever de 3 años, conocido por su naturaleza amigable y juguetona. Disfruta de largas caminatas y juegos al aire libre.",
-    salud: "Vacunado y desparasitado al día.",
-    refugio: "Refugio Canino Santiago Centro",
-    estado: "Disponible",
-  };
+
 
   return (
     <div className="max-w-6xl mx-auto px-4 md:px-6 py-6">
@@ -54,11 +62,7 @@ const [favorites, setFavorites] = useState<Record<number, boolean>>({});
         </Button>
 
         <Carouselmascota
-            images={[
-            "/images/Labrador.jpg",
-            "/images/Labrador2.jpeg",
-            "/images/Labrador3.jpg",
-            ]}
+            images={mascota.images}
             isFavorite={!!favorites[mascota.id]}
             onToggleFavorite={() => toggleFav(mascota.id)}
         />
@@ -204,7 +208,7 @@ const [favorites, setFavorites] = useState<Record<number, boolean>>({});
           <div>
             <h2 className="font-semibold mb-1">Refugio</h2>
             <p className="text-sm text-muted-foreground">
-              {mascota.refugio}
+              {mascota.refugioName}
             </p>
           </div>
 

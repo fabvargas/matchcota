@@ -1,25 +1,24 @@
 import { PetImageUrl } from "./PetImageUrl";
 
-
 export class PetImages {
 
-    constructor(
-        private readonly heroImage: PetImageUrl,
-        private readonly images?: PetImageUrl[], 
-    ){}
+  constructor(
+    private readonly images: PetImageUrl[], // 👈 ya no hero obligatoria
+  ){}
 
-    static create( heroImage: PetImageUrl, images?: PetImageUrl[]): PetImages {
-        return new PetImages(heroImage, images);
-    }
+  static create(images: PetImageUrl[]): PetImages {
+    return new PetImages(images);
+  }
 
-    getHeroImage(): PetImageUrl {
-        return this.heroImage;
-    }
+  getAllImages(): PetImageUrl[] {
+    return this.images;
+  }
 
-    getImages(): PetImageUrl[] | undefined {
-        return this.images;
-    }
+  getHeroImage(): PetImageUrl | undefined {
+    return this.images[0]; // 👈 puede no existir
+  }
 
-
-
+  hasImages(): boolean {
+    return this.images.length > 0;
+  }
 }

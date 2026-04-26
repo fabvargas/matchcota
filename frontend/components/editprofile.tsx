@@ -44,20 +44,6 @@ const comunas = selectedRegion
       onSubmit={handleSubmit}
       >
 
-      {/*Avatar como botón */}
-      <div className="flex flex-col items-center mb-6">       
-        <button
-          type="button"
-          onClick={() => setOpenAvatarModal(true)}
->
-          <Avatar className="w-24 h-24 hover:scale-105 transition">
-            <AvatarImage src={selectedAvatar} />
-          </Avatar>
-        </button>
-        <p className="text-sm text-gray-500 mt-2">
-          Cambiar avatar
-        </p>
-      </div>
       {/* MODAL SECUNDARIO */}
       {openAvatarModal && (
         <AvatarSelector

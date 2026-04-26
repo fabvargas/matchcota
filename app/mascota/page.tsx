@@ -1,5 +1,8 @@
 import Listamascota from "@/frontend/components/listamascota";
-export default function Mascota() {
+import { GetMascotasByRefugio } from "../controller/pet/GetMascotaByRefugio";
+
+export default async function Mascota() {
+    const data = await GetMascotasByRefugio(); // Reemplaza con la función real para obtener las mascotas
     return (
         <div className="max-w-7xl mx-auto px-6 py-10">
             <h1 className="text-3xl md:text-4xl font-bold mb-4 text-[#4CAF7A]">
@@ -8,7 +11,7 @@ export default function Mascota() {
             <p className="text-gray-600 text-lg mb-6">
                 Descubre a tu compañero perfecto esperando un hogar
             </p>
-            <Listamascota />
+            <Listamascota mascotas={data.data || []} />
         </div>
 
         
