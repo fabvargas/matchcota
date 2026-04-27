@@ -56,7 +56,7 @@ description: formData.get("description")?.toString() ?? "",
         UserProfileSchema, 
         data);  
   
-    const dbClient = SupabaseService.getInstance().getClient();
+    const dbClient = SupabaseService.getInstance().getAdminClient();
     const userProfileRepository = new SupabaseUserProfileRepository(dbClient);
     const useCase = new UpdateUserProfileUseCase(userProfileRepository);
 
