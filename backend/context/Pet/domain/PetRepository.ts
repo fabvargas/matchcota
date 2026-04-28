@@ -7,6 +7,7 @@ import { PetType } from "./PetType";
 
 export interface PetRepository {
     save(pet: Pet): Promise<void>;
+    saveImages(petId: PetId, imageUrl: string): Promise<void>;
     findById(id: PetId): Promise<Pet | null>;
     findAll(): Promise<Pet[]>;
     findByRefugioId(refugioId: RefugioId): Promise<Pet[]>;

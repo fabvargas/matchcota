@@ -33,6 +33,18 @@ export class SupabasePetRepository implements PetRepository {
     }
   }
 
+  async saveImages(petId: PetId, imageUrl: string): Promise<void> {
+    const { error } = await this.supabase
+      .from("imagen_mascota")
+      .insert({
+        id_mascota: petId.getValue(),
+        url: imageUrl,
+        orden_visualizacion: 0 // Aquí podrías implementar una lógica para asignar el orden correcto
+      });
+      
+    if (error) throw new Error(error.message);
+  }
+
   // =====================================================
   // 🔍 FIND BY ID
   // =====================================================
@@ -62,7 +74,7 @@ export class SupabasePetRepository implements PetRepository {
     }
 
     const result = this.mapToDomain(data);
-    console.log("Mascota encontrada:", result);
+  
     return result;
   }
 
@@ -97,7 +109,7 @@ export class SupabasePetRepository implements PetRepository {
   // =====================================================
   async findByRefugioId(id_refugio: RefugioId): Promise<Pet[]> {
 
-    console.log("Buscando mascotas para refugio ID:", id_refugio.getValue());
+   
 
     const { data, error } = await this.supabase
       .from("mascota")
@@ -119,7 +131,7 @@ export class SupabasePetRepository implements PetRepository {
       
       if (error) throw new Error(error.message);
       if (!data || data.length === 0) return [];
-      console.log(data[0].size)
+  
 
     return data.map((m) => this.mapToDomain(m));
   }

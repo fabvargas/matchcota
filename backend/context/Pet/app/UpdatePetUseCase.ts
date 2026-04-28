@@ -32,8 +32,15 @@ export class UpdatePetUseCase {
     description: data.description,
     images: data.images,
         });
-    
+        
+        
 
     await this.petRepository.update(petToUpdate);
+    if (data.images && data.images.length > 0) {
+        for (const imageUrl of data.images) {
+            await this.petRepository.saveImages(petToUpdate.getId(), imageUrl);
+        }
+    }
+
   } 
 }
