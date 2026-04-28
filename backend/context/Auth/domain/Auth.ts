@@ -135,6 +135,7 @@ export class Auth{
         return this.two_factor.isTwoFactorEnabled();
     }
 
+
     comparePassword(plainPassword: AuthPassword): Promise<boolean> {
         return AuthPasswordHashed.compare(plainPassword, this.passwordHashed);
     }

@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { LayoutWrapper } from "@/frontend/components/layout-wrapper";
 import { Toaster } from "@/frontend/components/ui/sonner"
+import { SessionProvider } from "next-auth/react";
 
 const inter = Inter({
   weight: ["100", "300", "400", "800", "900"],
@@ -24,15 +25,20 @@ export default function RootLayout({
       lang="en"
       className={`${inter.className} h-full antialiased`}
     >
+      <SessionProvider>
       <body >
         <div className="min-h-screen flex flex-col bg-[#FFF6F0] " >
+
 
         <Toaster position="top-center" richColors />
         <LayoutWrapper>
           {children}
         </LayoutWrapper>
+
         </div>
+
       </body>
+      </SessionProvider>
     </html>
   );
 }

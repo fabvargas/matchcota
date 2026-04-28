@@ -23,6 +23,7 @@ export default function EditProfile({
   profile,
 }: EditProfileProps) {
 
+
   const [selectedAvatar, setSelectedAvatar] = useState(currentAvatar);
   const regionData=regionOptions;
   const comunaData=comunaOptions;
@@ -42,6 +43,15 @@ const comunas = selectedRegion
     <form className=" " 
       onSubmit={handleSubmit}
       >
+
+      {/* MODAL SECUNDARIO */}
+      {openAvatarModal && (
+        <AvatarSelector
+          current={selectedAvatar}
+          onSelect={setSelectedAvatar}
+          onClose={() => setOpenAvatarModal(false)}
+        />
+      )}
 
       {/*Avatar como botón */}
       <div className="flex flex-col items-center mb-6">       
@@ -146,6 +156,7 @@ const comunas = selectedRegion
 
       >
          {isPending ? "Guardando..." : "Guardar Cambios"}
+
         </Button>
 
         <Button variant="outline" onClick={onCancel}>

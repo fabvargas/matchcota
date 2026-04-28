@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from "@/frontend/components/ui/button"
@@ -28,4 +29,5 @@ const {state, isPending, handleSubmit } = useSubmitForm(DeleteUserProfile, {erro
       </DialogContent>
     </Dialog>
   );
+
 }

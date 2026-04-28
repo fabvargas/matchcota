@@ -3,7 +3,7 @@ import {UUIDType, UUIDSchema} from "../../Shared/UUIDType";
 export class PetId {
 
     constructor(
-        private readonly value: UUIDType,
+         readonly value: UUIDType,
     ){
 
         PetId.validate(value);

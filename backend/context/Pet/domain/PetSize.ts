@@ -1,7 +1,7 @@
 import {z} from "zod";
 import { parseSchema } from "@/backend/utils/parseSchema";
 
-export const PetSizeSchema = z.enum(["pequeño", "Mediano", "Grande"], {message: "Invalid Size"});
+export const PetSizeSchema = z.enum(["Pequeño", "Mediano", "Grande"], {message: "Invalid Size"});
 export type PetSizeType = z.infer<typeof PetSizeSchema>;
 
 export class PetSize{

@@ -43,11 +43,6 @@ export class Refugio{
         return new Refugio( id, authId, name, img_url, address, telephone, description, comuna, codigoPostal, region);
     }
 
-
-    getComunas(): string[] {
-        return this.comuna?.getComunas() || [];
-    }
-
     getName(): RefugioName {
         return this.name;
     }
@@ -56,6 +51,13 @@ export class Refugio{
         return this.comuna?.isComuna(value) || false;
     }
 
+    getCodigoPostal(): RefugioCodigoPostal {
+        return this.codigoPostal!;
+    }
+
+    getComuna(): RefugioComuna {
+        return this.comuna!;
+    }
 
     toPrimitives() {
         return {
@@ -96,5 +98,9 @@ export class Refugio{
             primitives.codigoPostal == null ? undefined : new RefugioCodigoPostal(primitives.codigoPostal),
             primitives.region == null ? undefined : new RefugioRegion(primitives.region)
         )
+    }
+
+    getId(): RefugioId {
+        return this.id;
     }
 }

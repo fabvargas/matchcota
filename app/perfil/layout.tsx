@@ -7,6 +7,9 @@ import { AppSidebar } from "@/frontend/components/app-sidebar";
 import GetProfile from "../controller/profile/GetProfile";
 import { auth } from "@/auth";
 
+
+
+
 function formatRoleLabel(role: string | undefined): string {
   if (!role) return "—";
   const r = role.toLowerCase();
@@ -44,7 +47,7 @@ export default async function PerfilLayout({
   const initials = initialsFromDisplayName(displayName);
 
   return (
-    
+   
     <SidebarProvider>
 
       <AppSidebar
@@ -60,5 +63,6 @@ export default async function PerfilLayout({
       </SidebarInset>
 
     </SidebarProvider>
+  
   );
 }

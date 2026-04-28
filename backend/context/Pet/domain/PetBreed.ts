@@ -28,7 +28,7 @@ export const PetBreedSchema = z.enum([
 export type PetBreedType = z.infer<typeof PetBreedSchema>;
 
 export class PetBreed {
-  private constructor(
+   constructor(
     private readonly value: PetBreedType,
   ) {}
 

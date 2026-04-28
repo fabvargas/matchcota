@@ -1,7 +1,7 @@
 import {z} from "zod";
 import { parseSchema } from "@/backend/utils/parseSchema";
 
-export const PetImageUrlSchema = z.string({message: "Invalid Image URL"}).url({message: "Invalid URL format"});
+export const PetImageUrlSchema = z.url({message: "Invalid URL format"});
 
 export type PetImageUrlType = z.infer<typeof PetImageUrlSchema>;
 

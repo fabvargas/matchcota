@@ -1,5 +1,6 @@
 import { ComunaSchema, ComunaType } from "../../Shared/ComunaType";
 
+export type PetComunaType = ComunaType;
 export class PetComuna {
 
     constructor(
