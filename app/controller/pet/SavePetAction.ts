@@ -46,7 +46,7 @@ export async function SavePetAction(
 
 
   try {
-    const dbClient =  SupabaseService.getInstance().getClient();
+    const dbClient = SupabaseService.getInstance().getAdminClient();
   const petRepository = new SupabasePetRepository(dbClient);
   const refugioRepository = new SupabaseRefugioRepository(dbClient);
   const useCase = new SavePetUseCase(petRepository, refugioRepository);

@@ -13,5 +13,7 @@ export interface AuthRepository {
 
   updatePassword(id: AuthId, newPasswordHashed: string): Promise<void>;
 
+  updateTwoFactorEnabled(id: AuthId, enabled: boolean): Promise<void>;
+
   delete(id: AuthId): Promise<void>;
 }

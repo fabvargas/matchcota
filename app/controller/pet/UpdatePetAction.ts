@@ -47,7 +47,7 @@ export async function UpdatePetAction(
 
 
   try {
-    const dbClient =  SupabaseService.getInstance().getClient();
+    const dbClient = SupabaseService.getInstance().getAdminClient();
   const petRepository = new SupabasePetRepository(dbClient);
   const useCase = new UpdatePetUseCase(petRepository);
     const parsedData = await parseSchema(updateSchema, data);

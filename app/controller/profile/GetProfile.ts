@@ -36,6 +36,7 @@ export default async function GetProfile(){
         id: authFind.getId().getValue(),
         email: authFind.getEmail().getValue(),
         role: authFind.getRole().getValue(),
+        twoFactorEnabled: authFind.isTwoFactorEnabled(),
     }
 
     if (authFind.isAdoptante()) {

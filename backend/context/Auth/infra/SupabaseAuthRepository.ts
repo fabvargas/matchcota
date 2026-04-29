@@ -150,6 +150,25 @@ private mapToDomain(data: any): Auth {
         }
       }
 
+      async updateTwoFactorEnabled(
+        id: AuthId,
+        enabled: boolean
+      ): Promise<void> {
+        const { error } = await this.supabase
+          .from(SupabaseAuthRepository.TABLE)
+          .update({
+            [SupabaseAuthRepository.COLUMNS.TWO_FACTOR]: enabled,
+            [SupabaseAuthRepository.COLUMNS.UPDATED_AT]: new Date(),
+          })
+          .eq(SupabaseAuthRepository.COLUMNS.ID, id.getValue());
+
+        if (error) {
+          throw new Error(
+            "Error updating two_factor_enabled: " + error.message
+          );
+        }
+      }
+
       async delete(id: AuthId): Promise<void> {
         const { error } = await this.supabase
           .from(SupabaseAuthRepository.TABLE)
