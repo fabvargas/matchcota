@@ -49,6 +49,8 @@ export class SavePetUseCase {
             throw new ValidateDomainError("Refugio no encontrado para el usuario autenticado");
         }
 
+        console.log(data.images, "🔥 Imágenes recibidas en UseCase");
+
         const petEntity = Pet.create(
             new PetIdRefugio(refugio.getId().getValue()),
             new PetType(data.type as PetTypeType),
@@ -62,13 +64,17 @@ export class SavePetUseCase {
             new PetSize(data.size as PetSizeType),
             new PetDescription(data.description),
             new PetHealthDescription(data.health_description),
-            data.images ? new PetImages(new PetImageUrl(data.images[0]), data.images.length > 1 ? data.images.slice(1).map(img => new PetImageUrl(img)) : undefined) : undefined
+            data.images ? new PetImages(data.images.map(url => new PetImageUrl(url))) : undefined
         );
 
 
         
 
         await this.petRepository.save(petEntity);
-
+        if (data.images && data.images.length > 0) {
+            for (const imageUrl of data.images) {
+                await this.petRepository.saveImages(petEntity.getId(), imageUrl);
+            }
+        }
     }
 }

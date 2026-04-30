@@ -14,25 +14,54 @@ import { breedByType, caracterOptions, energyLevel, genreOptions, PetType, sizeO
 import { comunaOptions } from "../lib/petOptions";
 
 import { CardMascotaProps } from "./Cardmascota";
+import { useSession } from "next-auth/react";
+import { useUploadImages } from "../hooks/useUploadImages";
+
 
 
 
 
 export default function FormMascota(
- { handleSubmit, isPending, state , mascota }: { handleSubmit: (e: SyntheticEvent<HTMLFormElement>) => void; isPending: boolean; state: { error: boolean; message: string }; mascota?: CardMascotaProps  }
+ { handleSubmit, isPending, state , mascota }: { handleSubmit: (e: SyntheticEvent<HTMLFormElement>, formData: FormData) => void; isPending: boolean; state: { error: boolean; message: string }; mascota?: CardMascotaProps  }
 ) {
   const [previews, setPreviews] = useState<string[]>([]);
 const [type, setType] = useState<PetType | null>(mascota ? (mascota.tipo as PetType) : null);
+const [files, setFiles] = useState<File[]>([]);
+const { data: session } = useSession();
+const {uploadImages} = useUploadImages(session?.user.id || "");
 
+const handleImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const selectedFiles = Array.from(e.target.files || []);
 
-  const handleImages = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    const urls = files.map((file) => URL.createObjectURL(file));
-    setPreviews(urls);
-  };
+  setFiles(selectedFiles);
+
+  const previewUrls = selectedFiles.map((file) =>
+    URL.createObjectURL(file)
+  );
+
+  setPreviews(previewUrls);
+};
   
-  
-  
+
+const handleFormSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+   e.preventDefault();
+
+    if (!session?.user?.id) return;
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    // 🚀 subir imágenes AQUÍ
+    const urls = await uploadImages(files);
+
+    console.log("URLs obtenidas después de subir imágenes:", urls);
+
+    urls.forEach((url) => {
+      formData.append("urls", url);
+    });
+
+    handleSubmit(e, formData);
+}
  
     
   return (
@@ -54,7 +83,7 @@ const [type, setType] = useState<PetType | null>(mascota ? (mascota.tipo as PetT
               Completa la información para registrar o editar una mascota en adopción.
             </p>
           </div>
-          <form onSubmit={handleSubmit} className="w-full">
+          <form onSubmit={handleFormSubmit} className="w-full">
           {/* FORM GRID */}
           <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -213,7 +242,6 @@ const [type, setType] = useState<PetType | null>(mascota ? (mascota.tipo as PetT
             <div className="flex flex-col gap-4">
 
               <input
-                name="images"
                 type="file"
                 accept="image/*"
                 multiple
@@ -221,6 +249,8 @@ const [type, setType] = useState<PetType | null>(mascota ? (mascota.tipo as PetT
                 className="hidden"
                 id="upload-images"
               />
+
+      
           
               
               {/* BOTÓN UPLOAD */}

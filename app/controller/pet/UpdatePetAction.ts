@@ -21,6 +21,7 @@ const updateSchema = z.object({
   size: z.string().min(1, "El tamaño de la mascota es requerido"),
   health_description: z.string().min(1, "La descripción de la salud es requerida"),
   description: z.string().min(1, "La descripción es requerida"),
+  images: z.array(z.string()).optional()
 });
 
 export async function UpdatePetAction(
@@ -41,10 +42,13 @@ export async function UpdatePetAction(
     size: formData.get("size") as string,
     health_description: formData.get("health_description") as string,
     description: formData.get("description") as string,
+    images: (formData.getAll("images") as string[]).filter(Boolean)
+
   };
 
 
 
+  console.log("data images:", data.images);
 
   try {
     const dbClient = SupabaseService.getInstance().getAdminClient();
@@ -68,6 +72,8 @@ export async function UpdatePetAction(
   });
     console.log("Archivos recibidos:", files);
     const imagesData = files.map(file => file.name);
+    
+    console.log("Nombres de archivos procesados:", imagesData);
 
     await useCase.execute({
       ...parsedData,

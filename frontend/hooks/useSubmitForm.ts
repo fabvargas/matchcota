@@ -12,17 +12,18 @@ export function useSubmitForm<TState>(
   const [state, formAction, isPending] = useActionState(action, initialState);
   
 
-  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
-    e.preventDefault();
+const handleSubmit = (
+  e: React.SyntheticEvent<HTMLFormElement>,
+  customFormData?: FormData
+) => {
+  e.preventDefault();
 
-    const formData = new FormData(e.currentTarget);
-    startTransition(() => {
+  const formData = customFormData || new FormData(e.currentTarget);
+
+  startTransition(() => {
     formAction(formData);
-    });
-    if (redirectTo) {
-      redirect(redirectTo);
-    }
-  };
+  });
+};
 
 
 
