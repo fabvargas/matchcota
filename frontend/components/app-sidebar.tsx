@@ -44,7 +44,7 @@ export function AppSidebar() {
     },
     {
       name: "Test MatchCota",
-      href: "/perfil/test",
+      href: "/inforazas",
       icon: BookCheck,
     },
     {

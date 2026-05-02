@@ -34,7 +34,7 @@ export function Navbar() {
           <Link href="/" className="hover:text-[#4CAF7A]">
             Publicar mascota
           </Link>
-          <Link href="/" className="hover:text-[#4CAF7A]">
+          <Link href="/inforazas" className="hover:text-[#4CAF7A]">
             Test
           </Link>
         </nav>
