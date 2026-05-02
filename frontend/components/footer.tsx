@@ -55,6 +55,10 @@ export function Footer() {
           <Link href="/contacto" className="hover:text-blue-600">
             Contacto
           </Link>
+          
+          <Link href="/inforazas" className="hover:text-blue-600">
+            Información de razas
+          </Link>
         </div>
 
         <div className="flex flex-col gap-2 text-sm">
