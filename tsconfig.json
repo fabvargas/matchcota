@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "backend/context/Application/infra/ApplicationMapper.ts"  ],
   "exclude": ["node_modules"]
 }

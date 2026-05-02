@@ -1,29 +1,26 @@
-"use client";
+"use client"
 
-import { Card, CardContent } from "@/frontend/components/ui/card";
-import { Button } from "@/frontend/components/ui/button";
-import { Badge } from "@/frontend/components/ui/badge";
+import React, { useState } from 'react'
+import { Card, CardContent } from './ui/card'
+import { Badge } from 'lucide-react';
+import { Button } from './ui/button';
+import EliminarSolicitud from '@/app/controller/solicitud/EliminarSolicitud';
 
-export default function Solicitudes({ solicitudes }: { solicitudes: any[] }) {
-  
-console.log("Solicitudes recibidas en el componente:", solicitudes);
+export default function SolicitudCard({ solicitudes }: { solicitudes: any[] }) {
+    const [solicitudesState, setSolicitudesState] = useState(solicitudes);
+
+    const deleteSolicitud = async (id: string) => {
+      setSolicitudesState((prev) => prev.filter((s) => s.id !== id));
+      await EliminarSolicitud(id);
+    };
   return (
-    <div className="space-y-6">
+  <div className="space-y-4">
 
-      {/* HEADER */}
-      <div>
-        <h1 className="text-3xl font-bold text-[#4CAF7A]">
-          📩 Solicitudes de adopción
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Gestiona las solicitudes enviadas a tu refugio.
-        </p>
-      </div>
-
-      {/* LISTA */}
-      <div className="space-y-4">
-
-        {solicitudes.map((s) => (
+        {
+        !solicitudesState || solicitudesState.length === 0 ? (
+          <p>No tienes solicitudes de adopción en este momento.</p>
+        ) : (
+        solicitudesState.map((s) => (
           <Card
             key={s.id}
             className="border-none shadow-sm hover:shadow-md transition rounded-2xl"
@@ -94,28 +91,23 @@ console.log("Solicitudes recibidas en el componente:", solicitudes);
               {/* ACCIONES */}
               <div className="flex flex-col sm:flex-row gap-2">
 
-                <Button
-                  size="sm"
-                  className="bg-[#4CAF7A] hover:bg-[#3d9c66]"
-                >
-                  Aceptar
-                </Button>
+            
 
                 <Button
                   size="sm"
                   variant="outline"
                   className="border-red-300 text-red-500 hover:bg-red-50"
+                    onClick={() => deleteSolicitud(s.id)}
                 >
-                  Rechazar
+                  Eliminar solicitud
                 </Button>
 
               </div>
 
             </CardContent>
-          </Card>
+          </Card>)
         ))}
 
       </div>
-    </div>
-  );
+  )
 }

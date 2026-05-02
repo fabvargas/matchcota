@@ -19,11 +19,12 @@ import {
   HeartHandshake,
   Bookmark,
 } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { Button } from "./ui/button";
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const {data: session} = useSession();
 
   const menu = [
     {
@@ -91,8 +92,11 @@ export function AppSidebar() {
 
           {menu.map((item) => {
             const isActive = pathname === item.href;
-
+            if(item.name === "Gestionar mascotas" && session?.user?.role !== "refugio"){
+              return null; // No renderizar este item si el usuario no es admin
+            }
             return (
+
               <Link
                 key={item.name}
                 href={item.href}

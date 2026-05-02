@@ -7,6 +7,7 @@ import { PawPrint, Venus, Mars, MapPin, Calendar, Zap, Heart, ArrowLeft } from "
 import { Card, CardContent } from "./ui/card";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { AdoptarDialog } from "./AdoptarDialog";
 
 
 export default function Fichamascota(
@@ -29,6 +30,7 @@ export default function Fichamascota(
       refugioName: string;
       refugioComunas: string;
       refugioCodigoPostal: string;
+      refugioId: string;
     };
   }
 ) {
@@ -214,9 +216,7 @@ const [favorites, setFavorites] = useState<Record<string, boolean>>({});
 
           {/* CTA */}
           <div className="pt-4">
-            <Button variant="customorange" className="w-full">
-              Adoptar a {mascota.nombre}
-            </Button>
+           <AdoptarDialog mascotaId={mascota.id} refugioId={mascota.refugioId} />
           </div>
           </CardContent>
           </Card>

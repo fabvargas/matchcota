@@ -35,9 +35,10 @@ const mascota = {
   refugioName: pet.refugioName,
   refugioComunas: pet.refugioComunas,
   refugioCodigoPostal: pet.refugioCodigoPostal,
+  refugioId: pet.RefugioId, // 🔥 antes RefugioId
 };
 
-console.log("Mascota en detalle:", mascota);
+
 
   return (
     <div>

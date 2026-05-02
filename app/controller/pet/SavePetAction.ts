@@ -47,7 +47,7 @@ export async function SavePetAction(
       // 👇 ahora vienen URLs desde el cliente
       urls: (formData.getAll("urls") as string[]).filter(Boolean).join(","), // Convertir array a string
     };
-    console.log("Data recibida en SavePetAction:", data);
+  
 
     const parsedData = await parseSchema(SavePetSchema, data);
 
@@ -65,7 +65,7 @@ export async function SavePetAction(
     const refugioRepository = new SupabaseRefugioRepository(dbClient);
     const useCase = new SavePetUseCase(petRepository, refugioRepository);
 
-    console.log("Parsed Data:", parsedData);
+   
 
     await useCase.execute(
       {

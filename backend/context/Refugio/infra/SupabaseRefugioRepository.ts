@@ -106,7 +106,7 @@ export class SupabaseRefugioRepository implements RefugioRepository {
     if (!data) return null;
 
     const result =  this.mapToDomain(data);
-    console.log("Refugio encontrado en SupabaseRefugioRepository.findById:", result);
+
     return result;
   }
 

@@ -11,10 +11,11 @@ import { CardMascotaProps } from "./Cardmascota";
 
 type PanelRefugioProps = {
   mascotas: CardMascotaProps[];
+  solicitudes: any[];
 };
   
 
-export default function PanelRefugio({ mascotas }: PanelRefugioProps) {
+export default function PanelRefugio({ mascotas, solicitudes }: { mascotas: CardMascotaProps[]; solicitudes: any[] }) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -66,7 +67,7 @@ export default function PanelRefugio({ mascotas }: PanelRefugioProps) {
       <div className="min-h-[300px]">
         {activeTab === "general" && <General />}
         {activeTab === "mascotas" && <MisMascotas mascotas={mascotas} />}
-        {activeTab === "solicitudes" && <Solicitudes />}
+        {activeTab === "solicitudes" && <Solicitudes solicitudes={solicitudes} />}
       </div>
 
     </div>

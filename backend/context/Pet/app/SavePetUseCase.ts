@@ -49,7 +49,7 @@ export class SavePetUseCase {
             throw new ValidateDomainError("Refugio no encontrado para el usuario autenticado");
         }
 
-        console.log(data.images, "🔥 Imágenes recibidas en UseCase");
+     
 
         const petEntity = Pet.create(
             new PetIdRefugio(refugio.getId().getValue()),

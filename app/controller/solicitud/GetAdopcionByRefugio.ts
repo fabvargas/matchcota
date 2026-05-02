@@ -1,0 +1,27 @@
+import { auth } from "@/auth";
+import { GetApplicationByAuthUseCase } from "@/backend/context/Application/app/GetApplicationByAuth";
+import { GetApplicationByRefugioIdUseCase } from "@/backend/context/Application/app/GetApplicationByRefugioIdUseCase";
+import { SupabaseApplicationRepository } from "@/backend/context/Application/infra/SupabaseApplicationRepository";
+import { SupabaseRefugioRepository } from "@/backend/context/Refugio/infra/SupabaseRefugioRepository";
+import { SupabaseService } from "@/backend/infra/supabase/server";
+
+
+
+export async function GetAdopcionByRefugio() {
+    try {
+    const session = await auth();
+
+    if (!session) {
+        throw new Error("User not authenticated");
+    }
+
+    const dbClient = SupabaseService.getInstance().getClient();
+    const applicationRepository = new SupabaseApplicationRepository(dbClient);
+    const useCase = new GetApplicationByAuthUseCase(applicationRepository);
+
+    return useCase.execute(session.user.id);
+}
+catch (error) {
+    console.error("Error in GetAdopcionByRefugio:", error);
+}
+}

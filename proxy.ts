@@ -1,25 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "./auth";
 
-const publicRoutes = ["/login","/registro"];
-const protectedRoutes = ["/perfil"];
 
-export function proxy(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
+    const session = await auth();
 
-  const sessionToken = req.cookies.get("authjs.session-token")?.value;
-  const isLoggedIn = !!sessionToken;
+  const isLoggedIn = !!session;
+
+  const publicRoutes = ["/login", "/registro"];
+  const protectedRoutes = ["/perfil"];
 
   const isPublic = publicRoutes.includes(pathname);
   const isProtected = protectedRoutes.some(route =>
     pathname.startsWith(route)
   );
 
-  // 🔒 NO logueado → bloquear privadas
   if (!isLoggedIn && isProtected) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  // 🔐 Logueado → bloquear públicas y home
   if (isLoggedIn && (isPublic || pathname === "/")) {
     return NextResponse.redirect(new URL("/perfil", req.url));
   }

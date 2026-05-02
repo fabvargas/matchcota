@@ -31,6 +31,7 @@ const petWithRefugio = {
   refugioName: refugio.getName().getValue(),
   refugioComunas: comunaValue,
   refugioCodigoPostal: codigoPostalValue,
+  RefugioId: refugio.getId().getValue(),
 };
 
   return petWithRefugio;

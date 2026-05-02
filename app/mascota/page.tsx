@@ -4,7 +4,7 @@ import { GetAllMascotas } from "../controller/pet/GetAllMascota";
 
 export default async function Mascota() {
     const data = await GetAllMascotas(); // Reemplaza con la función real para obtener las mascotas
-    console.log("Mascotas obtenidas:", data);
+  
     return (
         <div className="max-w-7xl mx-auto px-6 py-10">
             <h1 className="text-3xl md:text-4xl font-bold mb-4 text-[#4CAF7A]">

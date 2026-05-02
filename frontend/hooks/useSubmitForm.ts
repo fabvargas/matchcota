@@ -22,7 +22,11 @@ const handleSubmit = (
 
   startTransition(() => {
     formAction(formData);
+    if (redirectTo) {
+      redirect(redirectTo);
+    }
   });
+
 };
 
 
@@ -31,6 +35,6 @@ const handleSubmit = (
     state,
     isPending,
     handleSubmit,
-   
+   formAction,
   };
 }

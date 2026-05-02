@@ -70,10 +70,10 @@ export async function UpdatePetAction(
       file.name !== "blob"
     );
   });
-    console.log("Archivos recibidos:", files);
+    
     const imagesData = files.map(file => file.name);
     
-    console.log("Nombres de archivos procesados:", imagesData);
+
 
     await useCase.execute({
       ...parsedData,

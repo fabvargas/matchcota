@@ -6,15 +6,17 @@ import { Button } from "@/frontend/components/ui/button";
 import { LogIn, UserPlus, Menu } from "lucide-react";
 import { useState } from "react";
 
+
 export function Navbar() {
   const [open, setOpen] = useState(false);
+
 
   return (
     <header className="w-full border-b bg-white">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 md:px-6 py-4">
 
         {/* LOGO */}
-        <Link href="/" className="flex items-center gap-2 font-bold text-[#2F2F2F]">
+        <Link href="/perfil" className="flex items-center gap-2 font-bold text-[#2F2F2F]">
           <Image
             src="/images/Logomc_icon.png"
             alt="MatchCota Logo"
