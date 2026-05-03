@@ -27,7 +27,7 @@ export class Application {
         mensaje: ApplicationMessage,
     ): Application {
         const id = ApplicationId.create();
-        const state = ApplicationState.createDisponible();
+        const state = ApplicationState.createPendiente();
         const createdAt = new Date();
         const updatedAt = new Date();
 
@@ -83,9 +83,9 @@ export class Application {
             new AuthId(primitives.authId),
             new RefugioId(primitives.refugioId),
             new ApplicationMessage(primitives.mensaje),
-            ApplicationState.createDisponible(),
-            new Date(),
-            new Date()
+            new ApplicationState(primitives.state),
+            new Date(primitives.createdAt),
+            new Date(primitives.updatedAt)
 
         );
     }

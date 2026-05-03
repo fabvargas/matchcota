@@ -10,4 +10,5 @@ export interface ApplicationRepository {
     getByRefugioId(refugioId: RefugioId): Promise<ApplicationWithRelations[]>;
     getByAuthId(authId: AuthId): Promise<ApplicationWithRelations[]>;
     delete(id: string): Promise<void>;
+    updateStatus(applicationId: string, status: number): Promise<void>;
 }

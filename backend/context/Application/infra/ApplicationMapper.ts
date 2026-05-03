@@ -11,13 +11,15 @@ export class ApplicationMapper {
 
   // 🔥 mapa interno (DB <-> dominio)
   private static STATE_TO_ID = {
-    disponible: 1,
-    adoptado: 2,
+    Pendiente: 1,
+    Aprobado: 2,
+    Rechazado: 3,
   } as const;
 
   private static ID_TO_STATE = {
-    1: "disponible",
-    2: "adoptado",
+    1: "Pendiente",
+    2: "Aprobado",
+    3: "Rechazado",
   } as const;
 
   // =========================
@@ -49,7 +51,7 @@ export class ApplicationMapper {
   // =========================
   static toDomain(raw: any): Application {
     const stateString = this.ID_TO_STATE[
-      raw.id_estado_adopcion as 1 | 2
+      raw.id_estado_adopcion as 1 | 2 | 3
     ];
 
     if (!stateString) {

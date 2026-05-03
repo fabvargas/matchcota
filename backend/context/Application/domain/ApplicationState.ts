@@ -2,7 +2,7 @@ import {z} from "zod";
 import { parseSchema } from  "@/backend/utils/parseSchema";
 
 export const ApplicationStateSchema = z.object({
-  state: z.enum(["disponible",  "adoptado"]),
+  state: z.enum(["Pendiente",  "Aprobado", "Rechazado"]),
 });
 
 
@@ -23,11 +23,16 @@ export class ApplicationState {
         parseSchema(ApplicationStateSchema, { state: value });
     }
 
-    static createDisponible(): ApplicationState {
-        return new ApplicationState("disponible");
+    static createPendiente(): ApplicationState {
+        return new ApplicationState("Pendiente");
     }
 
-    static createAdoptado(): ApplicationState {
-        return new ApplicationState("adoptado");
+    static createAprobado(): ApplicationState {
+        return new ApplicationState("Aprobado");
     }
+
+    static createRechazado(): ApplicationState {
+        return new ApplicationState("Rechazado");
+    }
+
 }

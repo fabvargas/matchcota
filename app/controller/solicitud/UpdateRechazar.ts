@@ -1,0 +1,18 @@
+"use server";
+
+import { UpdateAprobadoUseCase } from "@/backend/context/Application/app/UpdateAprobado";
+import { UpdateRechazarUseCase } from "@/backend/context/Application/app/UpdateRechazar";
+import { SupabaseApplicationRepository } from "@/backend/context/Application/infra/SupabaseApplicationRepository";
+import { SupabaseService } from "@/backend/infra/supabase/server";
+import { redirect } from "next/navigation";
+
+export async function UpdateRechazar(id: string) {
+
+    const dbClient =  SupabaseService.getInstance().getClient();
+    const applicationRepository = new SupabaseApplicationRepository(dbClient);
+    const useCase = new UpdateRechazarUseCase(applicationRepository);
+
+     await useCase.execute(id);
+    
+     redirect("/perfil/gestionarmascota?tab=solicitudes");
+}

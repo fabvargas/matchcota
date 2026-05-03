@@ -28,7 +28,8 @@ export default function SolicitudCard({ solicitudes }: { solicitudes: any[] }) {
             <CardContent className="flex flex-col gap-4 p-5">
 
               {/* HEADER */}
-              <div>
+              <div className="flex items-center justify-between">
+                <div>
                 <p className="text-xs text-muted-foreground">
                   {s.fecha}
                 </p>
@@ -36,6 +37,39 @@ export default function SolicitudCard({ solicitudes }: { solicitudes: any[] }) {
                 <p className="text-sm font-semibold text-[#2F2F2F]">
                   {s.nombreUsuario} quiere adoptar a {s.nombreMascota}
                 </p>
+                </div>
+                {
+                    s.state === "Aprobado" && (
+                        <span className="text-green-600 font-semibold flex items-center gap-1 mr-10">  
+                        <Badge  className="text-green-600">
+              
+                        </Badge>
+                          Aprobado
+                        </span>
+                    )
+                }
+                {
+                    s.state === "Rechazado" && (
+                      <span className="text-red-600 font-semibold flex items-center gap-1 mr-10"> 
+                      <Badge className="text-red-600">
+                   
+                      </Badge>
+                           Rechazado
+                      </span>
+                    )
+
+                }
+                {
+                    s.state === "Pendiente" && (
+                      <span className="text-yellow-600 font-semibold flex items-center gap-1 mr-10"> 
+                      <Badge className="text-yellow-600">
+                  
+                      </Badge>
+                            Pendiente
+                      </span>
+                    )
+                }
+
               </div>
 
               {/* INFO ADOPTANTE */}
@@ -65,28 +99,7 @@ export default function SolicitudCard({ solicitudes }: { solicitudes: any[] }) {
 
               </div>
 
-              {/* ESTADO */}
-              <div className="flex items-center gap-2">
-
-                {s.state === "Pendiente" && (
-                  <Badge className="bg-yellow-50 text-yellow-600 border border-yellow-200">
-                    Pendiente
-                  </Badge>
-                )}
-
-                {s.state === "Aprobada" && (
-                  <Badge className="bg-green-50 text-green-600 border border-green-200">
-                    Aprobada
-                  </Badge>
-                )}
-
-                {s.state === "Rechazada" && (
-                  <Badge className="bg-red-50 text-red-600 border border-red-200">
-                    Rechazada
-                  </Badge>
-                )}
-
-              </div>
+        
 
               {/* ACCIONES */}
               <div className="flex flex-col sm:flex-row gap-2">

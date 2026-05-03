@@ -103,4 +103,18 @@ async delete(id: string): Promise<void> {
     console.log(`Application with ID ${id} deleted successfully.`);
   }
 }
+
+async updateStatus(applicationId: string, status: number): Promise<void> {
+  const { error } = await this.supabaseClient
+    .from("solicitud_adopcion")
+    .update({ id_estado_adopcion: status })
+    .eq("id_solicitud", applicationId);
+
+  if (error) {
+    console.error("Error updating application status:", error);
+    throw new Error("Failed to update application status");
+  } else {
+    console.log(`Application with ID ${applicationId} updated to status ${status} successfully.`);
+  } 
+}
 }
