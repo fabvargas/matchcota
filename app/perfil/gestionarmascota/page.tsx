@@ -8,12 +8,13 @@ export default async function GestionarMascotaPage() {
   const response = await GetMascotasByRefugio();
 
     const solicitudes = await GetAdopcionByRefugio();
-
+ 
 
 
   if (response.error || !solicitudes) {
     return <div>Error: {response.message}</div>;
   }
+ 
 
   return (
     <div>

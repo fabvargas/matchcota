@@ -7,6 +7,8 @@ import { SupabaseService } from "@/backend/infra/supabase/server";
 import { SupabaseUserProfileRepository } from "@/backend/context/UserProfile/infra/SupabaseUserProfileRepository";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
+import { SupabaseRefugioRepository } from "@/backend/context/Refugio/infra/SupabaseRefugioRepository";
+import { UpdateRefugioProfileUseCase } from "@/backend/context/Refugio/app/UpdateRefugioProfile";
 
 
 
@@ -56,9 +58,12 @@ description: formData.get("description")?.toString() ?? "",
         UserProfileSchema, 
         data);  
   
-    const dbClient = SupabaseService.getInstance().getClient();
+    const dbClient = SupabaseService.getInstance().getAdminClient();
     const userProfileRepository = new SupabaseUserProfileRepository(dbClient);
-    const useCase = new UpdateUserProfileUseCase(userProfileRepository);
+    const useCaseUser = new UpdateUserProfileUseCase(userProfileRepository);
+
+      const refugioRepository = new SupabaseRefugioRepository(dbClient);
+        const useCaseRefugio = new UpdateRefugioProfileUseCase(refugioRepository);
 
     const session =  await auth();
     if (!session?.user?.id) {
@@ -70,9 +75,29 @@ description: formData.get("description")?.toString() ?? "",
 
     const idAuth = session.user.id;
 
+    if(session.user.role === "refugio"){
+
+      const refugioProfile = await useCaseRefugio.execute(
+     idAuth,
+     parsedData.name,
+     parsedData.address,
+     parsedData.telephone,
+     parsedData.description,
+        undefined,
+     parsedData.comuna,
+     parsedData.region,
+     undefined
+    );
+    return {
+        error: false,
+        message: "Perfil de usuario actualizado exitosamente",
+        data: refugioProfile    
+    }
+
+    }
 
 
-    const userProfile = await useCase.execute(
+    const userProfile = await useCaseUser.execute(
         idAuth,
         parsedData.name,
         undefined, // img_url no se actualiza en este formulario

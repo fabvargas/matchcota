@@ -47,7 +47,7 @@ export default async function ChangePasswordAction(
       };
     }
         const parsedData = await parseSchema(ChangePasswordSchema, data);
-        const clienDb = SupabaseService.getInstance().getClient();
+        const clienDb = SupabaseService.getInstance().getAdminClient();
         const authRepository = new SupabaseAuthRepository(clienDb);
         const useCase = new ChangePasswordUseCase(authRepository);
         await useCase.execute(

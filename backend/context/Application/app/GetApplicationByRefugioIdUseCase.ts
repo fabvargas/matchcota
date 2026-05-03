@@ -14,6 +14,7 @@ export class GetApplicationByRefugioIdUseCase {
 
     async execute(authId: string) {
         const refugio = await this.refugioRepository.findByAuthId(new AuthId(authId));
+        console.log("Refugio found for auth ID:", refugio);
         if (!refugio) {
             console.log("Refugio not found for auth ID:", authId);
             return [];

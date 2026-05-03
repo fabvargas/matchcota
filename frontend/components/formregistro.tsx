@@ -15,25 +15,30 @@ import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 
 
 
 export default function Formregistro() {
-   
-     const { state, isPending, handleSubmit } = useSubmitForm(RegisterAction, { error: false, message: "" });
-     const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+  const { state, isPending, handleSubmit } = useSubmitForm(RegisterAction, {
+    error: false,
+    message: "",
+  });
+  const [showPassword, setShowPassword] = useState(false);
 
-      useEffect(() => {
+  useEffect(() => {
     if (state?.error) {
       toast.error(state.message || "Credenciales incorrectas");
       return;
     }
 
     if (state?.message) {
-      toast.success(state.message || "Inicio de sesión exitoso");
+      toast.success(state.message || "Registro exitoso");
+      router.push("/login");
     }
-  }, [state]);
+  }, [state, router]);
 
 
   return (

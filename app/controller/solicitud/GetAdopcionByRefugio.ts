@@ -17,9 +17,12 @@ export async function GetAdopcionByRefugio() {
 
     const dbClient = SupabaseService.getInstance().getClient();
     const applicationRepository = new SupabaseApplicationRepository(dbClient);
-    const useCase = new GetApplicationByAuthUseCase(applicationRepository);
-
-    return useCase.execute(session.user.id);
+    const refugioRepository = new SupabaseRefugioRepository(dbClient);
+    const useCase = new GetApplicationByRefugioIdUseCase(applicationRepository, refugioRepository);
+    console.log("Executing GetAdopcionByRefugio for auth ID:", session.user.id);
+    const applications = await useCase.execute(session.user.id);
+    console.log("Applications fetched in GetAdopcionByRefugio:", applications);
+    return applications;
 }
 catch (error) {
     console.error("Error in GetAdopcionByRefugio:", error);

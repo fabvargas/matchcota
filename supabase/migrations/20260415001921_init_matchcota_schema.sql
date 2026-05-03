@@ -1,276 +1,273 @@
+-- =========================================================
+-- EXTENSION
+-- =========================================================
 create extension if not exists pgcrypto;
 
 -- =========================================================
--- LIMPIEZA OPCIONAL
+-- DROP
 -- =========================================================
--- Úsalo solo si vas a partir desde cero en un proyecto nuevo.
--- Si no quieres borrar todo, comenta este bloque.
-
-drop table if exists public.notificacion cascade;
-drop table if exists public.solicitud_adopcion cascade;
 drop table if exists public.favorito cascade;
 drop table if exists public.imagen_mascota cascade;
+drop table if exists public.mascota_caracter cascade;
+drop table if exists public.solicitud_adopcion cascade;
 drop table if exists public.mascota cascade;
-drop table if exists public.usuario_rol cascade;
-drop table if exists public.refugio_profile cascade;
 drop table if exists public.usuario_profile cascade;
+drop table if exists public.refugio_profile cascade;
+drop table if exists public.auth cascade;
 drop table if exists public.rol cascade;
+drop table if exists public.provider cascade;
 drop table if exists public.estado_adopcion cascade;
 drop table if exists public.estado_mascota cascade;
 drop table if exists public.raza cascade;
 drop table if exists public.tipo_mascota cascade;
+drop table if exists public.caracter cascade;
+drop table if exists public.sexo cascade;
 drop table if exists public.comuna cascade;
-drop table if exists public.auth cascade;
+drop table if exists public.region cascade;
 
 -- =========================================================
--- AUTH PROPIA
+-- BASE
 -- =========================================================
 
-create table if not exists public.auth (
-  id_auth uuid primary key default gen_random_uuid(),
-  email varchar(150) not null unique,
-  password_hash varchar(255) not null,
-  role varchar(50) not null,
-  verified boolean not null default false,
-  two_factor_enabled boolean not null default false,
-  auth_provider varchar(30) not null default 'local',
-  estado_cuenta varchar(20) not null default 'activo',
-  fecha_creacion timestamptz not null default now(),
-  fecha_actualizacion timestamptz
+create table public.region (
+id_region serial primary key,
+nombre varchar(100) not null unique
+);
+
+create table public.comuna (
+id_comuna serial primary key,
+id_region int references public.region(id_region),
+nombre varchar(100) not null
+);
+
+create table public.rol (
+id_rol serial primary key,
+nombre varchar(50) not null unique
+);
+
+create table public.provider (
+id_provider serial primary key,
+nombre varchar(50) not null unique
+);
+
+create table public.tipo_mascota (
+id_tipo_mascota serial primary key,
+nombre varchar(50) not null
+);
+
+create table public.estado_mascota (
+id_estado_mascota serial primary key,
+nombre varchar(50) not null
+);
+
+create table public.estado_adopcion (
+id_estado_adopcion serial primary key,
+nombre varchar(50) not null
+);
+
+create table public.raza (
+id_raza serial primary key,
+nombre varchar(100) not null,
+id_tipo_mascota int references public.tipo_mascota(id_tipo_mascota),
+unique(nombre, id_tipo_mascota)
+);
+
+create table public.caracter (
+id_caracter serial primary key,
+nombre varchar(50) not null
+);
+
+create table public.sexo (
+id_sexo serial primary key,
+nombre varchar(20) not null
 );
 
 -- =========================================================
--- TABLAS CATÁLOGO
+-- AUTH
 -- =========================================================
 
-create table if not exists public.comuna (
-  id_comuna bigint generated always as identity primary key,
-  nombre varchar(100) not null,
-  region varchar(100) not null
-);
-
-create table if not exists public.tipo_mascota (
-  id_tipo_mascota bigint generated always as identity primary key,
-  nombre varchar(30) not null unique
-);
-
-create table if not exists public.raza (
-  id_raza bigint generated always as identity primary key,
-  nombre varchar(100) not null,
-  descripcion text,
-  id_tipo_mascota bigint not null references public.tipo_mascota(id_tipo_mascota)
-);
-
-create table if not exists public.estado_mascota (
-  id_estado_mascota bigint generated always as identity primary key,
-  nombre varchar(30) not null unique
-);
-
-create table if not exists public.estado_adopcion (
-  id_estado_adopcion bigint generated always as identity primary key,
-  nombre varchar(30) not null unique
-);
-
-create table if not exists public.rol (
-  id_rol bigint generated always as identity primary key,
-  nombre varchar(50) not null unique
+create table public.auth (
+auth_id uuid primary key default gen_random_uuid(),
+email varchar(150) not null unique,
+password_hash varchar(255) not null,
+verified boolean default false,
+two_factor_enabled boolean default false,
+fecha_creacion timestamptz not null default now(),
+fecha_actualizacion timestamptz,
+id_auth_provider int references public.provider(id_provider),
+id_rol int references public.rol(id_rol)
 );
 
 -- =========================================================
 -- PERFILES
 -- =========================================================
 
-create table if not exists public.usuario_profile (
-  id_usuario uuid primary key references public.auth(id_auth) on delete cascade,
-  nombre varchar(100) not null,
-  telefono varchar(20) not null,
-  direccion varchar(250),
-  foto_perfil_url varchar(250),
-  bio text,
-  fecha_actualizacion timestamptz default now(),
-  id_comuna bigint references public.comuna(id_comuna)
+create table public.usuario_profile (
+id_usuario uuid primary key references public.auth(auth_id) on delete cascade,
+nombre varchar(100),
+telefono varchar(20),
+direccion varchar(200),
+imagen_url varchar(255),
+descripcion text,
+fecha_actualizacion timestamptz default now(),
+id_comuna int references public.comuna(id_comuna)
 );
 
-create table if not exists public.refugio_profile (
-  id_refugio uuid primary key default gen_random_uuid(),
-  nombre varchar(150) not null,
-  direccion varchar(250),
-  telefono varchar(20) not null,
-  descripcion text,
-  codigo_postal varchar(20),
-  verificada boolean not null default false,
-  id_comuna bigint references public.comuna(id_comuna),
-  auth_user_id uuid not null unique references public.auth(id_auth) on delete cascade
-);
-
-create table if not exists public.usuario_rol (
-  auth_user_id uuid not null references public.auth(id_auth) on delete cascade,
-  id_rol bigint not null references public.rol(id_rol),
-  primary key (auth_user_id, id_rol)
+create table public.refugio_profile (
+id_refugio uuid primary key default gen_random_uuid(),
+nombre varchar(150),
+direccion varchar(200),
+telefono varchar(20),
+descripcion text,
+imagen_url varchar(255),
+fecha_actualizacion timestamptz default now(),
+codigo_postal varchar(50),
+id_comuna int references public.comuna(id_comuna),
+auth_id uuid unique references public.auth(auth_id) on delete cascade
 );
 
 -- =========================================================
--- NÚCLEO DEL DOMINIO
+-- MASCOTA
 -- =========================================================
 
-create table if not exists public.mascota (
-  id_mascota uuid primary key default gen_random_uuid(),
-  nombre varchar(100) not null,
-  edad integer not null check (edad >= 0),
-  sexo varchar(20) not null,
-  tamanio varchar(20) not null,
-  nivel_energia varchar(20),
-  caracter varchar(100),
-  descripcion text,
-  fecha_publicacion timestamptz not null default now(),
-  fecha_actualizacion timestamptz,
-  id_refugio uuid not null references public.refugio_profile(id_refugio) on delete cascade,
-  id_tipo_mascota bigint not null references public.tipo_mascota(id_tipo_mascota),
-  id_raza bigint not null references public.raza(id_raza),
-  id_estado_mascota bigint not null references public.estado_mascota(id_estado_mascota),
-  id_comuna bigint not null references public.comuna(id_comuna)
+create table public.mascota (
+id_mascota uuid primary key default gen_random_uuid(),
+nombre varchar(100),
+edad int check (edad >= 0),
+nivel_energia int check (nivel_energia between 1 and 5),
+descripcion text,
+descripcion_salud text,
+fecha_publicacion timestamptz not null default now(),
+fecha_actualizacion timestamptz,
+id_refugio uuid references public.refugio_profile(id_refugio) on delete cascade,
+id_tipo_mascota int references public.tipo_mascota(id_tipo_mascota),
+id_raza int references public.raza(id_raza),
+id_estado_mascota int references public.estado_mascota(id_estado_mascota),
+id_comuna int references public.comuna(id_comuna),
+id_sexo int references public.sexo(id_sexo)
 );
 
-create table if not exists public.imagen_mascota (
-  id_imagen uuid primary key default gen_random_uuid(),
-  url varchar(250) not null,
-  es_principal boolean not null default false,
-  orden_visualizacion integer not null default 1,
-  id_mascota uuid not null references public.mascota(id_mascota) on delete cascade
-);
-
-create table if not exists public.favorito (
-  id_fav uuid primary key default gen_random_uuid(),
-  fecha_creacion timestamptz not null default now(),
-  id_mascota uuid not null references public.mascota(id_mascota) on delete cascade,
-  auth_user_id uuid not null references public.auth(id_auth) on delete cascade,
-  unique (id_mascota, auth_user_id)
-);
-
-create table if not exists public.solicitud_adopcion (
-  id_solicitud uuid primary key default gen_random_uuid(),
-  mensaje_postulacion text,
-  fecha_solicitud timestamptz not null default now(),
-  fecha_actualizacion timestamptz,
-  id_mascota uuid not null references public.mascota(id_mascota) on delete cascade,
-  id_estado_adopcion bigint not null references public.estado_adopcion(id_estado_adopcion),
-  auth_user_id uuid not null references public.auth(id_auth) on delete cascade
-);
-
-create table if not exists public.notificacion (
-  id_notificacion uuid primary key default gen_random_uuid(),
-  tipo varchar(50) not null,
-  titulo varchar(150) not null,
-  mensaje text not null,
-  leida boolean not null default false,
-  fecha_creacion timestamptz not null default now(),
-  auth_user_id uuid not null references public.auth(id_auth) on delete cascade
+create table public.mascota_caracter (
+id_mascota uuid references public.mascota(id_mascota) on delete cascade,
+id_caracter int references public.caracter(id_caracter),
+primary key (id_mascota, id_caracter)
 );
 
 -- =========================================================
--- ÍNDICES
+-- SOLICITUD ADOPCIÓN
 -- =========================================================
 
-create index if not exists idx_auth_email on public.auth (email);
-create index if not exists idx_auth_role on public.auth (role);
-
-create index if not exists idx_raza_id_tipo_mascota on public.raza (id_tipo_mascota);
-
-create index if not exists idx_usuario_profile_id_comuna on public.usuario_profile (id_comuna);
-
-create index if not exists idx_refugio_profile_id_comuna on public.refugio_profile (id_comuna);
-create index if not exists idx_refugio_profile_auth_user_id on public.refugio_profile (auth_user_id);
-
-create index if not exists idx_usuario_rol_auth_user_id on public.usuario_rol (auth_user_id);
-create index if not exists idx_usuario_rol_id_rol on public.usuario_rol (id_rol);
-
-create index if not exists idx_mascota_id_refugio on public.mascota (id_refugio);
-create index if not exists idx_mascota_id_tipo_mascota on public.mascota (id_tipo_mascota);
-create index if not exists idx_mascota_id_raza on public.mascota (id_raza);
-create index if not exists idx_mascota_id_estado_mascota on public.mascota (id_estado_mascota);
-create index if not exists idx_mascota_id_comuna on public.mascota (id_comuna);
-
-create index if not exists idx_imagen_mascota_id_mascota on public.imagen_mascota (id_mascota);
-
-create index if not exists idx_favorito_id_mascota on public.favorito (id_mascota);
-create index if not exists idx_favorito_auth_user_id on public.favorito (auth_user_id);
-
-create index if not exists idx_solicitud_adopcion_id_mascota on public.solicitud_adopcion (id_mascota);
-create index if not exists idx_solicitud_adopcion_id_estado_adopcion on public.solicitud_adopcion (id_estado_adopcion);
-create index if not exists idx_solicitud_adopcion_auth_user_id on public.solicitud_adopcion (auth_user_id);
-
-create index if not exists idx_notificacion_auth_user_id on public.notificacion (auth_user_id);
+create table public.solicitud_adopcion (
+id_solicitud uuid primary key default gen_random_uuid(),
+mensaje_postulacion text,
+fecha_solicitud timestamptz not null default now(),
+fecha_actualizacion timestamptz,
+id_mascota uuid references public.mascota(id_mascota) on delete cascade,
+id_estado_adopcion int references public.estado_adopcion(id_estado_adopcion),
+auth_id uuid references public.auth(auth_id) on delete cascade
+);
 
 -- =========================================================
--- RLS
+-- IMAGEN
 -- =========================================================
--- Se deja activado porque el esquema public está expuesto por la API.
--- Pero las policies NO usan auth.uid(), porque su auth es propia.
 
-alter table public.auth enable row level security;
-alter table public.comuna enable row level security;
-alter table public.tipo_mascota enable row level security;
-alter table public.raza enable row level security;
-alter table public.estado_mascota enable row level security;
-alter table public.estado_adopcion enable row level security;
-alter table public.rol enable row level security;
-
-alter table public.usuario_profile enable row level security;
-alter table public.refugio_profile enable row level security;
-alter table public.usuario_rol enable row level security;
-
-alter table public.mascota enable row level security;
-alter table public.imagen_mascota enable row level security;
-alter table public.favorito enable row level security;
-alter table public.solicitud_adopcion enable row level security;
-alter table public.notificacion enable row level security;
+create table public.imagen_mascota (
+id_imagen uuid primary key default gen_random_uuid(),
+url varchar(255),
+orden_visualizacion int default 1,
+id_mascota uuid references public.mascota(id_mascota) on delete cascade
+);
 
 -- =========================================================
--- POLICIES PÚBLICAS DE SOLO LECTURA
+-- FAVORITO
 -- =========================================================
--- Estas tablas sí se pueden exponer con la publishable key si quieren.
 
-create policy "comuna_select_public"
-on public.comuna
-for select
-using (true);
+create table public.favorito (
+id_favorito uuid primary key default gen_random_uuid(),
+fecha_creacion timestamptz not null default now(),
+id_mascota uuid references public.mascota(id_mascota) on delete cascade,
+auth_id uuid references public.auth(auth_id) on delete cascade,
+unique (id_mascota, auth_id)
+);
 
-create policy "tipo_mascota_select_public"
-on public.tipo_mascota
-for select
-using (true);
+-- =========================================================
+-- DATOS BASE
+-- =========================================================
 
-create policy "raza_select_public"
-on public.raza
-for select
-using (true);
+-- REGIONES
+insert into public.region (nombre) values
+('Metropolitana'),
+('Valparaíso'),
+('Biobío'),
+('Los Lagos');
 
-create policy "estado_mascota_select_public"
-on public.estado_mascota
-for select
-using (true);
+-- COMUNAS (dinámico, sin hardcode)
+insert into public.comuna (nombre, id_region) values
+('Puerto Montt', (select id_region from region where nombre = 'Los Lagos')),
+('Puerto Varas', (select id_region from region where nombre = 'Los Lagos')),
+('Castro', (select id_region from region where nombre = 'Los Lagos')),
+('Ancud', (select id_region from region where nombre = 'Los Lagos')),
 
-create policy "estado_adopcion_select_public"
-on public.estado_adopcion
-for select
-using (true);
+('Santiago', (select id_region from region where nombre = 'Metropolitana')),
+('Maipú', (select id_region from region where nombre = 'Metropolitana')),
+('Puente Alto', (select id_region from region where nombre = 'Metropolitana')),
+('La Florida', (select id_region from region where nombre = 'Metropolitana')),
 
-create policy "rol_select_public"
-on public.rol
-for select
-using (true);
+('Valparaíso', (select id_region from region where nombre = 'Valparaíso')),
+('Viña del Mar', (select id_region from region where nombre = 'Valparaíso')),
+('Quilpué', (select id_region from region where nombre = 'Valparaíso')),
 
-create policy "refugio_profile_select_public"
-on public.refugio_profile
-for select
-using (true);
+('Concepción', (select id_region from region where nombre = 'Biobío')),
+('Chillán', (select id_region from region where nombre = 'Biobío')),
+('Coronel', (select id_region from region where nombre = 'Biobío')),
+('Hualpén', (select id_region from region where nombre = 'Biobío'));
 
-create policy "mascota_select_public"
-on public.mascota
-for select
-using (true);
+-- ROLES
+insert into public.rol (nombre) values ('ADOPTANTE'), ('REFUGIO');
 
-create policy "imagen_mascota_select_public"
-on public.imagen_mascota
-for select
-using (true);
+-- PROVIDERS
+insert into public.provider (nombre) values ('EMAIL'), ('GOOGLE');
+
+-- TIPOS
+insert into public.tipo_mascota (nombre) values ('Perro'), ('Gato');
+
+-- SEXO
+insert into public.sexo (nombre) values ('Macho'), ('Hembra');
+
+-- ESTADOS
+insert into public.estado_mascota (nombre) values ('Disponible'), ('Adoptado');
+
+insert into public.estado_adopcion (nombre) values ('Pendiente'), ('Aprobado'), ('Rechazado');
+
+-- CARACTER
+insert into public.caracter (nombre) values
+('Amigable'), ('Juguetón'), ('Tranquilo'), ('Curioso'), ('Tímido'),
+('Activo'), ('Cariñoso'), ('Protector'), ('Sociable');
+
+-- RAZA
+insert into public.raza (nombre, id_tipo_mascota) values
+('Labrador Retriever', 1),
+('Pastor Alemán', 1),
+('Golden Retriever', 1),
+('Bulldog Inglés', 1),
+('Poodle', 1),
+('Beagle', 1),
+('Rottweiler', 1),
+('Yorkshire Terrier', 1),
+('Boxer', 1),
+('Dachshund', 1),
+('Chihuahua', 1),
+('Border Collie', 1),
+('Husky Siberiano', 1),
+('Shih Tzu', 1),
+('Cocker Spaniel', 1),
+('Siamés', 2),
+('Persa', 2),
+('Maine Coon', 2),
+('Bengalí', 2),
+('Sphynx', 2),
+('Ragdoll', 2),
+('British Shorthair', 2),
+('Scottish Fold', 2),
+('Abisinio', 2),
+('Azul Ruso', 2);

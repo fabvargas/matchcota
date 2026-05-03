@@ -22,7 +22,17 @@ import {
 import { signOut, useSession } from "next-auth/react";
 import { Button } from "./ui/button";
 
-export function AppSidebar() {
+export type AppSidebarUser = {
+  displayName: string;
+  roleLabel: string;
+  initials: string;
+};
+
+export function AppSidebar({
+  displayName,
+  roleLabel,
+  initials,
+}: AppSidebarUser) {
   const pathname = usePathname();
   const {data: session} = useSession();
 
@@ -74,13 +84,13 @@ export function AppSidebar() {
       <SidebarHeader className="p-4 border-b">
         <div className="flex items-center gap-3">
           
-          <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold">
-            SG
+          <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold">
+            {initials}
           </div>
 
-          <div>
-            <p className="font-semibold text-sm">Santiago</p>
-            <p className="text-xs text-gray-500">Adoptante</p>
+          <div className="min-w-0">
+            <p className="font-semibold text-sm truncate">{displayName}</p>
+            <p className="text-xs text-gray-500">{roleLabel}</p>
           </div>
 
         </div>

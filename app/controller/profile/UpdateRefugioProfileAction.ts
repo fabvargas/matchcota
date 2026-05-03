@@ -53,19 +53,23 @@ description: formData.get("description")?.toString() ?? "",
         RefufioProfileSchema, 
         data
     );
-
-    const dbClient = SupabaseService.getInstance().getClient();
-    const refugioRepository = new SupabaseRefugioRepository(dbClient);
-    const useCase = new UpdateRefugioProfileUseCase(refugioRepository);
-    const session =  await auth();
-    if (!session?.user?.id) {
+     const session =  await auth();
+        if (!session?.user?.id) {
       return {
         error: true,
         message: "No autenticado"
       };
     }
-
     const idAuth = session.user.id;
+
+   
+
+    const dbClient = SupabaseService.getInstance().getClient();
+    const refugioRepository = new SupabaseRefugioRepository(dbClient);
+    const useCase = new UpdateRefugioProfileUseCase(refugioRepository);
+   
+  
+
 
     const refugioProfile = await useCase.execute(
      idAuth,
@@ -76,7 +80,7 @@ description: formData.get("description")?.toString() ?? "",
         undefined,
      parsedData.comuna,
      parsedData.region,
-     parsedData.codigoPostal
+     undefined
     );
     
     return {

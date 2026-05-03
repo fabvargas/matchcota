@@ -20,7 +20,7 @@ export default async function GetProfile(){
       };
     }
 
-    const dbClient = SupabaseService.getInstance().getClient();
+    const dbClient = SupabaseService.getInstance().getAdminClient();
 
     const authRepository = new SupabaseAuthRepository(dbClient);
     const userProfileRepository = new SupabaseUserProfileRepository(dbClient);
@@ -36,6 +36,7 @@ export default async function GetProfile(){
         id: authFind.getId().getValue(),
         email: authFind.getEmail().getValue(),
         role: authFind.getRole().getValue(),
+        twoFactorEnabled: authFind.isTwoFactorEnabled(),
     }
 
     if (authFind.isAdoptante()) {
