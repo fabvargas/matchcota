@@ -64,7 +64,7 @@ description: formData.get("description")?.toString() ?? "",
 
    
 
-    const dbClient = SupabaseService.getInstance().getClient();
+    const dbClient = SupabaseService.getInstance().getAdminClient();
     const refugioRepository = new SupabaseRefugioRepository(dbClient);
     const useCase = new UpdateRefugioProfileUseCase(refugioRepository);
    

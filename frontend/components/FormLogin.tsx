@@ -48,6 +48,7 @@ export default function FormLogin() {
     }
 
     toast.success(state.message || "Inicio de sesión exitoso");
+    router.refresh();
     router.push("/perfil");
   }, [state, router]);
 

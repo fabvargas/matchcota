@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { parseSchema } from "@/app/controller/Shared/parseSchema";
 import { z } from "zod";
 import { ResponseType } from "@/app/controller/Shared/type";
@@ -60,7 +61,7 @@ export async function SavePetAction(
       };
     }
 
-    const dbClient = SupabaseService.getInstance().getClient();
+    const dbClient = SupabaseService.getInstance().getAdminClient();
 
     const petRepository = new SupabasePetRepository(dbClient);
     const refugioRepository = new SupabaseRefugioRepository(dbClient);
@@ -75,11 +76,6 @@ export async function SavePetAction(
       },
       session.user.id
     );
-
-    return {
-      error: false,
-      message: "Mascota guardada exitosamente",
-    };
   } catch (error) {
     console.error("Error al guardar la mascota:", error);
     return {
@@ -87,4 +83,6 @@ export async function SavePetAction(
       message: "Error al guardar la mascota",
     };
   }
+
+  redirect("/perfil/gestionarmascota?tab=mascotas");
 }
