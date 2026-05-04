@@ -104,7 +104,7 @@ const handleReject = async (id: string) => {
               </div>
 
               {/* ACCIONES — solo mientras está pendiente */}
-              {s.state === "Pendiente" && (
+            
                 <div className="flex flex-col sm:flex-row gap-2">
                   <Button
                     size="sm"
@@ -123,7 +123,7 @@ const handleReject = async (id: string) => {
                     Rechazar
                   </Button>
                 </div>
-              )}
+            
 
             </CardContent>
           </Card>
