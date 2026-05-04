@@ -33,7 +33,7 @@ if (!session) {
         message: "Usuario no autenticado"
     };
 }
-    const dbClient =  SupabaseService.getInstance().getClient();
+    const dbClient =  SupabaseService.getInstance().getAdminClient();
     const petRepository = new SupabasePetRepository(dbClient);
     const authRepository = new SupabaseAuthRepository(dbClient);
     const refugioRepository = new SupabaseRefugioRepository(dbClient);

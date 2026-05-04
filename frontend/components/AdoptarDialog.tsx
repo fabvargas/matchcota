@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 
 export function AdoptarDialog({ mascotaId, refugioId }: { mascotaId: string, refugioId: string }) {
 
-    const {state,handleSubmit,isPending} = useSubmitForm(AdopcionConfirm, {error: false, message: ""}, "/mascota/" + mascotaId);
+    const {state,handleSubmit,isPending} = useSubmitForm(AdopcionConfirm, {error: false, message: ""});
     const [open, setOpen] = useState(false);
 
 

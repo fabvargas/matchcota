@@ -90,31 +90,45 @@ async getByAuthId(authId: AuthId): Promise<ApplicationWithRelations[] > {
 
 }
 
-async delete(id: string): Promise<void> {
-  const { error } = await this.supabaseClient
+async delete(id: string, applicantAuthId: AuthId): Promise<void> {
+  const { data, error } = await this.supabaseClient
     .from("solicitud_adopcion")
     .delete()
-    .eq("id_solicitud", id);
+    .eq("id_solicitud", id)
+    .eq("auth_id", applicantAuthId.getValue())
+    .select("id_solicitud");
 
   if (error) {
     console.error("Error deleting application:", error);
     throw new Error("Failed to delete application");
-  } else {
-    console.log(`Application with ID ${id} deleted successfully.`);
+  }
+  if (!data?.length) {
+    throw new Error(
+      "No se pudo eliminar la solicitud o no pertenece a tu cuenta"
+    );
   }
 }
 
-async updateStatus(applicationId: string, status: number): Promise<void> {
-  const { error } = await this.supabaseClient
+async updateStatus(
+  applicationId: string,
+  status: number,
+  refugioId: RefugioId
+): Promise<void> {
+  const { data, error } = await this.supabaseClient
     .from("solicitud_adopcion")
     .update({ id_estado_adopcion: status })
-    .eq("id_solicitud", applicationId);
+    .eq("id_solicitud", applicationId)
+    .eq("id_refugio", refugioId.getValue())
+    .select("id_solicitud");
 
   if (error) {
     console.error("Error updating application status:", error);
     throw new Error("Failed to update application status");
-  } else {
-    console.log(`Application with ID ${applicationId} updated to status ${status} successfully.`);
-  } 
+  }
+  if (!data?.length) {
+    throw new Error(
+      "No se pudo actualizar la solicitud o no pertenece a tu refugio"
+    );
+  }
 }
 }

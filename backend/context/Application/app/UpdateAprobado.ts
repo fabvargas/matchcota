@@ -1,3 +1,4 @@
+import { RefugioId } from "../../Refugio/domain/RefugioId";
 import { ApplicationRepository } from "../domain/ApplicationRepository";
 
 export class UpdateAprobadoUseCase  {
@@ -9,7 +10,7 @@ export class UpdateAprobadoUseCase  {
     }
 
 
-    async execute(applicationId: string): Promise<void> {
-        return await this.applicationRepository.updateStatus(applicationId, 2);
+    async execute(applicationId: string, refugioId: RefugioId): Promise<void> {
+        return await this.applicationRepository.updateStatus(applicationId, 2, refugioId);
     }
 }

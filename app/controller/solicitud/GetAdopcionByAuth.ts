@@ -18,7 +18,7 @@ export async function GetAdopcionByAuth() {
 
     console.log("Session user ID in GetAdopcionByAuth:", session.user.id);
 
-    const dbClient = SupabaseService.getInstance().getClient();
+    const dbClient = SupabaseService.getInstance().getAdminClient();
     const applicationRepository = new SupabaseApplicationRepository(dbClient);
     const useCase = new GetApplicationByAuthUseCase(applicationRepository);
 

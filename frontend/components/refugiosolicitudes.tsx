@@ -103,32 +103,27 @@ const handleReject = async (id: string) => {
 
               </div>
 
-              {/* ACCIONES */}
-              <div className="flex flex-col sm:flex-row gap-2">
-                
-  
-                    <Button
-                      size="sm"
-                      className="bg-[#4CAF7A] hover:bg-[#3d9c66]"
-                      onClick={() => handleAccept(s.id)}
-                    >
-                      Aceptar
-                    </Button>
-               
-                
-             
+              {/* ACCIONES — solo mientras está pendiente */}
+              {s.state === "Pendiente" && (
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Button
+                    size="sm"
+                    className="bg-[#4CAF7A] hover:bg-[#3d9c66]"
+                    onClick={() => handleAccept(s.id)}
+                  >
+                    Aceptar
+                  </Button>
 
-
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="border-red-300 text-red-500 hover:bg-red-50"
-                  onClick={() => handleReject(s.id)}
-                >
-                  Rechazar
-                </Button>
-
-              </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="border-red-300 text-red-500 hover:bg-red-50"
+                    onClick={() => handleReject(s.id)}
+                  >
+                    Rechazar
+                  </Button>
+                </div>
+              )}
 
             </CardContent>
           </Card>

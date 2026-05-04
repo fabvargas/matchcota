@@ -15,7 +15,7 @@ export async function GetAdopcionByRefugio() {
         throw new Error("User not authenticated");
     }
 
-    const dbClient = SupabaseService.getInstance().getClient();
+    const dbClient = SupabaseService.getInstance().getAdminClient();
     const applicationRepository = new SupabaseApplicationRepository(dbClient);
     const refugioRepository = new SupabaseRefugioRepository(dbClient);
     const useCase = new GetApplicationByRefugioIdUseCase(applicationRepository, refugioRepository);

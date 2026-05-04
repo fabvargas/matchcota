@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { parseSchema } from "@/app/controller/Shared/parseSchema";
 import { z } from "zod";
 import { ResponseType } from "@/app/controller/Shared/type";
@@ -22,6 +23,8 @@ export async function AdopcionConfirm(
   prevState: ResponseType<void>,
   formData: FormData
 ): Promise<ResponseType<void>> {
+  let mascotaId = "";
+
   try {
     const data = {
       mascotaId: formData.get("mascotaId") as string,
@@ -29,11 +32,8 @@ export async function AdopcionConfirm(
       mensaje: formData.get("mensaje") as string,
     };
 
-
-
     const parsedData = await parseSchema(AdopcionSchema, data);
-
-    console.log("Parsed Data:", parsedData);
+    mascotaId = parsedData.mascotaId;
 
     const session = await auth();
     if (!session) {
@@ -43,28 +43,17 @@ export async function AdopcionConfirm(
       };
     }
 
- 
+    const dbClient = SupabaseService.getInstance().getAdminClient();
 
-    const dbClient = SupabaseService.getInstance().getClient();
-
-    // 🔥 repo + caso de uso
     const adopcionRepository = new SupabaseApplicationRepository(dbClient);
     const useCase = new SaveApplicationUseCase(adopcionRepository);
 
     await useCase.execute(
       parsedData.mascotaId,
-      session.user.id, // 🔥 authId viene del session.user.id
+      session.user.id,
       parsedData.refugioId,
       parsedData.mensaje
     );
-
-
-
-    return {
-      error: false,
-      message: "Solicitud de adopción enviada correctamente 🐶",
-    };
-
   } catch (error) {
     console.error("Error en AdopcionConfirm:", error);
 
@@ -73,4 +62,6 @@ export async function AdopcionConfirm(
       message: "Error al enviar la solicitud de adopción",
     };
   }
+
+  redirect(`/mascota/${mascotaId}`);
 }

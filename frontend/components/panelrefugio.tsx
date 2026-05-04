@@ -1,21 +1,25 @@
+
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { LayoutDashboard, PawPrint, Inbox } from "lucide-react";
+import { LayoutDashboard, PawPrint, Inbox, BarChart3 } from "lucide-react";
 import Tab from "@/frontend/components/Tab";
 import General from "@/frontend/components/refugiogeneral";
 import MisMascotas from "@/frontend/components/refugiomascota";
 import Solicitudes from "@/frontend/components/refugiosolicitudes";
+import RefugioInformeAdopciones from "@/frontend/components/refugioinformeadopciones";
 import { CardMascotaProps } from "./Cardmascota";
+import type { RefugioInformePdfProfile } from "@/frontend/lib/informePdf";
 
 
 type PanelRefugioProps = {
   mascotas: CardMascotaProps[];
   solicitudes: any[];
+  refugioInforme: RefugioInformePdfProfile;
 };
   
 
-export default function PanelRefugio({ mascotas, solicitudes }: { mascotas: CardMascotaProps[]; solicitudes: any[] }) {
+export default function PanelRefugio({ mascotas, solicitudes, refugioInforme }: PanelRefugioProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -62,12 +66,26 @@ export default function PanelRefugio({ mascotas, solicitudes }: { mascotas: Card
           label="Solicitudes"
         />
 
+        <Tab
+          active={activeTab === "informe"}
+          onClick={() => changeTab("informe")}
+          icon={<BarChart3 className="w-4 h-4" />}
+          label="Informe de adopciones"
+        />
+
       </div>
 
       <div className="min-h-[300px]">
         {activeTab === "general" && <General />}
         {activeTab === "mascotas" && <MisMascotas mascotas={mascotas} />}
         {activeTab === "solicitudes" && <Solicitudes solicitudes={solicitudes} />}
+        {activeTab === "informe" && (
+          <RefugioInformeAdopciones
+            mascotas={mascotas}
+            solicitudes={solicitudes}
+            refugio={refugioInforme}
+          />
+        )}
       </div>
 
     </div>

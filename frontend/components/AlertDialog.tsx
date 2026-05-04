@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Button } from "@/frontend/components/ui/button"
@@ -7,7 +6,7 @@ import DeleteUserProfile from "@/app/controller/profile/DeleteUserProfile";
 import { Dialog, DialogContent, DialogDescription, DialogOverlay, DialogTitle, DialogTrigger } from "@/frontend/components/ui/dialog";
 
 export default function AlertDialogBasic() {
-const {state, isPending, handleSubmit } = useSubmitForm(DeleteUserProfile, {error: false, message: ""},"/");
+const {state, isPending, handleSubmit } = useSubmitForm(DeleteUserProfile, {error: false, message: ""});
 
 
 

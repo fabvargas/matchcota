@@ -1,5 +1,4 @@
-
-create table public.size (
+create table if not exists public.size (
   id_size smallint primary key,
   nombre varchar(50) not null unique
 );

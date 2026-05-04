@@ -8,7 +8,7 @@ import { SupabaseService } from "@/backend/infra/supabase/server";
 
 export async function GetMascotaById(id: string) {
 
- const dbClient = SupabaseService.getInstance().getClient();
+ const dbClient = SupabaseService.getInstance().getAdminClient();
 
  const petRepository = new SupabasePetRepository(dbClient);
  const refugioRepository = new SupabaseRefugioRepository(dbClient);

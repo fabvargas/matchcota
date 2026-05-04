@@ -54,6 +54,7 @@ export default async function PerfilLayout({
         displayName={displayName}
         roleLabel={roleLabel}
         initials={initials}
+        role={rawRole}
       />
 
       <SidebarInset>
